@@ -1,5 +1,7 @@
 # Research Toolkit
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20773499.svg)](https://doi.org/10.5281/zenodo.20773499)
+
 A small family of free, single-file, browser-based tools for the research workflow,
 built as companions to [QueryBee](../index.html). Every tool is one self-contained
 HTML file with no build step, no account, no API key, and no server. Open the file in
