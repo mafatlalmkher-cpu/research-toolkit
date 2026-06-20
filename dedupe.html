@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Citation de-duplicator — RIS, BibTeX, CSV</title>
+<meta name="description" content="Free, browser-based tool to remove duplicate references from combined database searches. Import RIS, BibTeX, or CSV; de-duplicate by DOI and fuzzy title; export a clean merged library. Nothing is uploaded.">
+<meta name="author" content="Mafatlal M. Kher">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
+    --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
+    --rose:#A8456A;--rose-deep:#85304F;--rose-bg:#F6E7EE;--rose-line:#E6C4D3;
+    --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 8% -5%,rgba(168,69,106,.06),transparent 38%),radial-gradient(circle at 95% 0%,rgba(22,105,92,.045),transparent 40%);}
+  a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 24px;border-bottom:1px solid var(--rule);margin-bottom:26px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--rose);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:72ch;margin:0}
+  .panel{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
+  .panel h2{font-family:"Fraunces",serif;font-size:19px;font-weight:600;margin:0 0 14px}
+  .drop{border:2px dashed var(--rule-strong);border-radius:12px;padding:26px;text-align:center;color:var(--ink-soft);background:var(--paper);transition:all .15s;cursor:pointer}
+  .drop.over{border-color:var(--rose);background:var(--rose-bg)}
+  .drop b{color:var(--ink)}
+  textarea{width:100%;min-height:120px;resize:vertical;border:1px solid var(--rule-strong);border-radius:11px;padding:13px 14px;font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink);background:var(--paper);margin-top:14px;line-height:1.5}
+  textarea:focus{outline:none;border-color:var(--go)}
+  .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}
+  button.primary{font-family:inherit;font-weight:600;font-size:14.5px;color:#fff;background:var(--go);border:none;border-radius:10px;padding:11px 20px;cursor:pointer;box-shadow:0 1px 2px rgba(15,76,66,.3);transition:transform .12s,background .14s;display:inline-flex;align-items:center;gap:7px}
+  button.primary:hover{background:var(--go-deep);transform:translateY(-1px)}
+  button.primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  button.ghost{font-family:inherit;font-weight:600;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--rule-strong);border-radius:10px;padding:10px 15px;cursor:pointer}
+  button.ghost:hover{border-color:var(--ink-faint)}
+  .opt{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-soft)}
+  .opt input[type=range]{accent-color:var(--rose)}
+  .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .stat{background:var(--paper);border:1px solid var(--rule);border-radius:11px;padding:12px 16px;min-width:120px}
+  .stat .num{font-family:"Fraunces",serif;font-size:26px;font-weight:600;line-height:1}
+  .stat .lbl{font-size:12px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;margin-top:5px}
+  .stat.keep .num{color:var(--go-deep)} .stat.dup .num{color:var(--rose-deep)}
+  .group{border:1px solid var(--rule);border-radius:11px;padding:13px 15px;margin-bottom:11px;background:var(--paper)}
+  .group .gh{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:9px}
+  .rec{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px dashed var(--rule-strong);font-size:13.5px}
+  .rec:first-child{border-top:none}
+  .rec input[type=radio]{margin-top:4px;accent-color:var(--go)}
+  .rec .body{flex:1;min-width:0}
+  .rec .t{font-weight:600;color:var(--ink)}
+  .rec .m{font-size:12px;color:var(--ink-faint);margin-top:2px;word-break:break-word}
+  .rec.removed .t,.rec.removed .m{text-decoration:line-through;opacity:.55}
+  .rec .keepbadge{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--go-deep);background:#E4F0E9;border:1px solid #B9D9C7;border-radius:999px;padding:2px 8px;align-self:flex-start;margin-top:2px}
+  .filehint{font-size:12.5px;color:var(--ink-faint);margin-top:9px}
+  .groups-wrap{max-height:560px;overflow:auto;margin-top:8px;padding-right:4px}
+  .export-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .hidden{display:none}
+  footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
+  footer.foot a{color:var(--go-deep)}
+  .msg{font-size:13px;color:var(--danger);margin-top:8px;min-height:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">Literature workflow</div>
+    <h1>Citation de-duplicator</h1>
+    <p class="lede">Searched several databases and exported overlapping results? Drop your RIS, BibTeX, or CSV files here. Records are matched by DOI first, then by near-identical title, grouped so you can confirm each merge, and exported as one clean library. Files never leave your computer.</p>
+  </header>
+
+  <div class="panel">
+    <h2>1 · Load your references</h2>
+    <div class="drop" id="drop">
+      <div style="font-size:30px;margin-bottom:6px">📥</div>
+      <b>Drop .ris, .bib, .txt or .csv files here</b>, or click to choose.<br>
+      <span style="font-size:13px">You can add several files from different databases at once.</span>
+      <input type="file" id="file" multiple accept=".ris,.txt,.bib,.bibtex,.csv,.nbib" class="hidden">
+    </div>
+    <div class="filehint" id="fileList"></div>
+    <textarea id="paste" placeholder="…or paste RIS / BibTeX / CSV text here"></textarea>
+    <div class="controls">
+      <button class="primary" id="parseBtn">Find duplicates →</button>
+      <label class="opt"><input type="checkbox" id="fuzzy" checked> match near-identical titles</label>
+      <label class="opt" id="threshWrap">similarity ≥ <input type="range" id="thresh" min="85" max="100" value="93"> <span id="threshVal" style="font-family:JetBrains Mono,monospace">93%</span></label>
+      <button class="ghost" id="demo">Load example</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="panel hidden" id="results">
+    <h2>2 · Review &amp; export</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="num" id="sIn">0</div><div class="lbl">records in</div></div>
+      <div class="stat dup"><div class="num" id="sDup">0</div><div class="lbl">duplicates</div></div>
+      <div class="stat keep"><div class="num" id="sOut">0</div><div class="lbl">unique kept</div></div>
+      <div class="stat"><div class="num" id="sGrp">0</div><div class="lbl">merge groups</div></div>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-soft);margin:12px 0 0">In each group, the record marked <b>keep</b> is exported and the others are dropped. The most complete record is kept by default; click a different one to override.</p>
+    <div class="groups-wrap" id="groups"></div>
+    <div class="export-row">
+      <span style="font-size:13px;color:var(--ink-faint);align-self:center">Export the de-duplicated library:</span>
+      <button class="ghost" data-fmt="ris">RIS (.ris)</button>
+      <button class="ghost" data-fmt="bib">BibTeX (.bib)</button>
+      <button class="ghost" data-fmt="csv">CSV (.csv)</button>
+      <button class="ghost" data-fmt="removed">Removed log (.csv)</button>
+    </div>
+  </div>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT). All parsing and matching happen locally in your browser. Always eyeball the merge groups before exporting; automated matching is a strong first pass, not a substitute for judgement.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var RECORDS=[], CLUSTERS=[], FILES=[];
+
+/* ---------------- helpers ---------------- */
+function normDOI(d){ if(!d)return ""; return String(d).toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//,"").replace(/^doi:\s*/,"").trim(); }
+function normTitle(t){ if(!t)return ""; return String(t).toLowerCase().replace(/<[^>]+>/g," ").replace(/&[a-z]+;/g," ").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim(); }
+function getYear(s){ if(!s)return ""; var m=String(s).match(/\b(1[5-9]\d\d|20\d\d|21\d\d)\b/); return m?m[1]:""; }
+function lev(a,b){
+  if(a===b)return 0; if(!a.length)return b.length; if(!b.length)return a.length;
+  var prev=[],cur=[],i,j;
+  for(j=0;j<=b.length;j++)prev[j]=j;
+  for(i=1;i<=a.length;i++){ cur[0]=i;
+    for(j=1;j<=b.length;j++){ var cost=a.charCodeAt(i-1)===b.charCodeAt(j-1)?0:1;
+      cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+cost); }
+    var tmp=prev;prev=cur;cur=tmp;
+  }
+  return prev[b.length];
+}
+function simRatio(a,b){ if(!a&&!b)return 1; var m=Math.max(a.length,b.length); if(!m)return 1; return 1-lev(a,b)/m; }
+
+/* ---------------- parsers ---------------- */
+function parseRIS(text){
+  var recs=[], cur=null;
+  var lines=text.split(/\r?\n/);
+  function push(){ if(cur){ recs.push(cur);} cur=null; }
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i];
+    var m=line.match(/^([A-Z][A-Z0-9])\s{0,2}-\s?(.*)$/);
+    if(m){
+      var tag=m[1], val=m[2].trim();
+      if(tag==="TY"){ push(); cur={type:val,title:"",authors:[],year:"",doi:"",journal:"",abstract:"",volume:"",issue:"",pages:"",fmt:"ris"}; continue; }
+      if(!cur)cur={type:"",title:"",authors:[],year:"",doi:"",journal:"",abstract:"",volume:"",issue:"",pages:"",fmt:"ris"};
+      if(tag==="ER"){ push(); continue; }
+      if(tag==="TI"||tag==="T1"){ cur.title=(cur.title?cur.title+" ":"")+val; }
+      else if(tag==="AU"||tag==="A1"){ if(val)cur.authors.push(val); }
+      else if(tag==="PY"||tag==="Y1"){ cur.year=getYear(val)||cur.year; }
+      else if(tag==="DO"){ cur.doi=val; }
+      else if(tag==="JO"||tag==="JF"||tag==="JA"||tag==="T2"){ if(!cur.journal)cur.journal=val; }
+      else if(tag==="AB"||tag==="N2"){ cur.abstract=(cur.abstract?cur.abstract+" ":"")+val; }
+      else if(tag==="VL"){ cur.volume=val; }
+      else if(tag==="IS"){ cur.issue=val; }
+      else if(tag==="SP"){ cur.pages=val+(cur.pages?cur.pages:""); }
+      else if(tag==="EP"){ cur.pages=(cur.pages?cur.pages:"")+"-"+val; }
+      else if(tag==="DOI"){ cur.doi=val; }
+    } else if(cur && line.trim() && /^\s/.test(line)){
+      // continuation of previous (rare)
+    }
+  }
+  push();
+  return recs.filter(function(r){return r.title||r.doi||r.authors.length;});
+}
+function parseBib(text){
+  var recs=[];
+  var re=/@(\w+)\s*\{([^,]*),/g, m;
+  var idx=[];
+  while((m=re.exec(text))){ idx.push({type:m[1].toLowerCase(),start:m.index,fieldStart:re.lastIndex}); }
+  for(var k=0;k<idx.length;k++){
+    var seg=text.slice(idx[k].fieldStart, k+1<idx.length?idx[k+1].start:text.length);
+    var rec={type:idx[k].type,title:"",authors:[],year:"",doi:"",journal:"",abstract:"",volume:"",issue:"",pages:"",fmt:"bib"};
+    var fre=/(\w+)\s*=\s*(\{|")/g, fm;
+    while((fm=fre.exec(seg))){
+      var name=fm[1].toLowerCase(), open=fm[2], val="", p=fre.lastIndex;
+      if(open==="{"){ var depth=1; while(p<seg.length&&depth>0){ var ch=seg[p]; if(ch==="{")depth++; else if(ch==="}")depth--; if(depth>0)val+=ch; p++; } }
+      else { while(p<seg.length&&seg[p]!=='"'){ val+=seg[p]; p++; } }
+      fre.lastIndex=p;
+      val=val.replace(/\s+/g," ").replace(/[{}]/g,"").trim();
+      if(name==="title")rec.title=val;
+      else if(name==="author")rec.authors=val.split(/\s+and\s+/i).map(function(s){return s.trim();}).filter(Boolean);
+      else if(name==="year")rec.year=getYear(val);
+      else if(name==="doi")rec.doi=val;
+      else if(name==="journal"||name==="journaltitle"||name==="booktitle")rec.journal=rec.journal||val;
+      else if(name==="abstract")rec.abstract=val;
+      else if(name==="volume")rec.volume=val;
+      else if(name==="number")rec.issue=val;
+      else if(name==="pages")rec.pages=val;
+    }
+    if(rec.title||rec.doi)recs.push(rec);
+  }
+  return recs;
+}
+function splitCSVLine(line){
+  var out=[],cur="",q=false;
+  for(var i=0;i<line.length;i++){var c=line[i];
+    if(q){ if(c==='"'){ if(line[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else { if(c===',' ){out.push(cur);cur="";} else if(c==='"')q=true; else cur+=c; }
+  }
+  out.push(cur); return out;
+}
+function parseCSV(text){
+  var rows=[],lines=text.split(/\r?\n/),i;
+  // join wrapped quoted rows
+  var buf="";
+  for(i=0;i<lines.length;i++){ buf+= (buf?"\n":"")+lines[i];
+    var quotes=(buf.match(/"/g)||[]).length;
+    if(quotes%2===0){ if(buf.trim()!=="")rows.push(splitCSVLine(buf)); buf=""; }
+  }
+  if(buf.trim()!=="")rows.push(splitCSVLine(buf));
+  if(!rows.length)return [];
+  var head=rows[0].map(function(h){return h.toLowerCase().replace(/^﻿/,"").trim();});
+  function col(){ for(var a=0;a<arguments.length;a++){var idx=head.indexOf(arguments[a]); if(idx>=0)return idx;}
+    for(var b=0;b<arguments.length;b++){ for(var h=0;h<head.length;h++){ if(head[h].indexOf(arguments[b])>=0)return h; } } return -1; }
+  var ci={ title:col("title","article title","document title"), au:col("authors","author","author full names"),
+    year:col("year","publication year","date"), doi:col("doi"), jr:col("source title","journal","source","publication"),
+    ab:col("abstract"), vol:col("volume"), iss:col("issue"), pg:col("page start","pages") };
+  var recs=[];
+  for(i=1;i<rows.length;i++){ var r=rows[i]; if(r.length===1&&r[0].trim()==="")continue;
+    var g=function(idx){return idx>=0&&idx<r.length?String(r[idx]||"").trim():"";};
+    var au=g(ci.au); var authors=au?au.split(/;|\band\b/).map(function(s){return s.trim();}).filter(Boolean):[];
+    recs.push({type:"",title:g(ci.title),authors:authors,year:getYear(g(ci.year)),doi:g(ci.doi),journal:g(ci.jr),abstract:g(ci.ab),volume:g(ci.vol),issue:g(ci.iss),pages:g(ci.pg),fmt:"csv"});
+  }
+  return recs.filter(function(x){return x.title||x.doi;});
+}
+function detectAndParse(text,name){
+  var t=text.trim();
+  if(/^TY\s{0,2}-/m.test(t)||/^ER\s{0,2}-/m.test(t))return {fmt:"ris",recs:parseRIS(text)};
+  if(/^@\w+\s*\{/m.test(t))return {fmt:"bib",recs:parseBib(text)};
+  if(name&&/\.bib/i.test(name))return {fmt:"bib",recs:parseBib(text)};
+  if(name&&/\.ris|\.nbib/i.test(name))return {fmt:"ris",recs:parseRIS(text)};
+  // default CSV if commas+header
+  if(t.indexOf(",")>=0)return {fmt:"csv",recs:parseCSV(text)};
+  return {fmt:"ris",recs:parseRIS(text)};
+}
+
+/* ---------------- de-dup ---------------- */
+function dedupe(recs,useFuzzy,thresh){
+  var n=recs.length, parent=[],i,j;
+  for(i=0;i<n;i++)parent[i]=i;
+  function find(x){ while(parent[x]!==x){parent[x]=parent[parent[x]];x=parent[x];} return x; }
+  function uni(a,b){ a=find(a);b=find(b); if(a!==b)parent[a]=b; }
+  // by DOI
+  var byDoi={};
+  for(i=0;i<n;i++){ var d=normDOI(recs[i].doi); recs[i]._t=normTitle(recs[i].title); recs[i]._d=d;
+    if(d){ if(byDoi[d]!==undefined)uni(i,byDoi[d]); else byDoi[d]=i; } }
+  // by exact normalised title
+  var byTitle={};
+  for(i=0;i<n;i++){ var tt=recs[i]._t; if(tt.length>=8){ if(byTitle[tt]!==undefined)uni(i,byTitle[tt]); else byTitle[tt]=i; } }
+  // fuzzy within prefix blocks
+  if(useFuzzy){
+    var blocks={};
+    for(i=0;i<n;i++){ var key=recs[i]._t.slice(0,7); if(recs[i]._t.length<10)continue; (blocks[key]=blocks[key]||[]).push(i); }
+    Object.keys(blocks).forEach(function(k){
+      var arr=blocks[k];
+      for(var a=0;a<arr.length;a++)for(var b=a+1;b<arr.length;b++){
+        var x=recs[arr[a]],y=recs[arr[b]];
+        if(find(arr[a])===find(arr[b]))continue;
+        if(x.year&&y.year&&x.year!==y.year)continue;
+        if(simRatio(x._t,y._t)>=thresh)uni(arr[a],arr[b]);
+      }
+    });
+  }
+  var groups={};
+  for(i=0;i<n;i++){ var root=find(i); (groups[root]=groups[root]||[]).push(i); }
+  return Object.keys(groups).map(function(k){ return groups[k].map(function(idx){return recs[idx];}); });
+}
+function score(r){ return (r.doi?4:0)+(r.abstract?2:0)+(r.authors.length?1:0)+(r.journal?1:0)+(r.year?1:0)+Math.min((r.title||"").length,200)*0.002; }
+
+/* ---------------- UI ---------------- */
+function setMsg(t){ $("msg").textContent=t||""; }
+function refreshFileList(){ $("fileList").innerHTML = FILES.length? ("Loaded: "+FILES.map(function(f){return "<b>"+f.name+"</b> ("+f.count+")";}).join(" · ")) : ""; }
+
+function run(){
+  var texts=[]; FILES.forEach(function(f){texts.push({text:f.text,name:f.name});});
+  var pasted=$("paste").value.trim(); if(pasted)texts.push({text:pasted,name:"pasted"});
+  if(!texts.length){ setMsg("Add at least one file or paste some references first."); return; }
+  RECORDS=[];
+  texts.forEach(function(o){ var p=detectAndParse(o.text,o.name); p.recs.forEach(function(r){r.src=o.name;}); RECORDS=RECORDS.concat(p.recs); });
+  if(!RECORDS.length){ setMsg("No references found. Check the file is a valid RIS, BibTeX, or CSV export."); return; }
+  setMsg("");
+  var thr=parseInt($("thresh").value,10)/100;
+  CLUSTERS=dedupe(RECORDS,$("fuzzy").checked,thr);
+  CLUSTERS.forEach(function(g){ var best=0; for(var i=1;i<g.length;i++)if(score(g[i])>score(g[best]))best=i; g._keep=best; });
+  renderResults();
+}
+function renderResults(){
+  var dupGroups=CLUSTERS.filter(function(g){return g.length>1;});
+  var totalIn=RECORDS.length, kept=CLUSTERS.length, removed=totalIn-kept;
+  $("sIn").textContent=totalIn; $("sDup").textContent=removed; $("sOut").textContent=kept; $("sGrp").textContent=dupGroups.length;
+  var html="";
+  if(!dupGroups.length){ html='<p style="color:var(--ink-soft);font-size:14px;padding:10px 0">No duplicates found across '+totalIn+' records. Your library is already clean — export it below if you like.</p>'; }
+  dupGroups.forEach(function(g,gi){
+    html+='<div class="group" data-g="'+CLUSTERS.indexOf(g)+'"><div class="gh">Group '+(gi+1)+' · '+g.length+' copies'+(g[0]._d?' · DOI '+esc(g[0]._d):'')+'</div>';
+    g.forEach(function(r,ri){
+      var isKeep=(g._keep===ri);
+      html+='<label class="rec '+(isKeep?'':'removed')+'" data-g="'+CLUSTERS.indexOf(g)+'" data-r="'+ri+'">'+
+        '<input type="radio" name="grp'+CLUSTERS.indexOf(g)+'" '+(isKeep?'checked':'')+'>'+
+        '<div class="body"><div class="t">'+esc(r.title||"(no title)")+'</div>'+
+        '<div class="m">'+esc((r.authors[0]||"")+(r.authors.length>1?" et al.":""))+(r.year?" · "+r.year:"")+(r.journal?" · "+esc(r.journal):"")+" · <i>"+esc(r.src)+" / "+r.fmt+"</i></div></div>"+
+        (isKeep?'<span class="keepbadge">keep</span>':'')+'</label>';
+    });
+    html+="</div>";
+  });
+  $("groups").innerHTML=html;
+  $("results").classList.remove("hidden");
+  $("results").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+$("groups").addEventListener("change",function(e){
+  var lab=e.target.closest(".rec"); if(!lab)return;
+  var gi=+lab.getAttribute("data-g"), ri=+lab.getAttribute("data-r");
+  CLUSTERS[gi]._keep=ri; renderResults();
+});
+
+/* ---------------- exports ---------------- */
+function keptRecords(){ return CLUSTERS.map(function(g){return g[g._keep];}); }
+function removedRecords(){ var out=[]; CLUSTERS.forEach(function(g){ g.forEach(function(r,i){ if(i!==g._keep)out.push(r); }); }); return out; }
+function toRIS(recs){
+  return recs.map(function(r){
+    var L=["TY  - "+(r.type||"JOUR")];
+    r.authors.forEach(function(a){L.push("AU  - "+a);});
+    if(r.title)L.push("TI  - "+r.title);
+    if(r.journal)L.push("JO  - "+r.journal);
+    if(r.year)L.push("PY  - "+r.year);
+    if(r.volume)L.push("VL  - "+r.volume);
+    if(r.issue)L.push("IS  - "+r.issue);
+    if(r.pages)L.push("SP  - "+r.pages);
+    if(r.doi)L.push("DO  - "+normDOI(r.doi));
+    if(r.abstract)L.push("AB  - "+r.abstract);
+    L.push("ER  - ");
+    return L.join("\n");
+  }).join("\n\n");
+}
+function bibKey(r,i){ var a=(r.authors[0]||"anon").split(/[\s,]+/)[0].toLowerCase().replace(/[^a-z]/g,""); return (a||"ref")+(r.year||"")+(i+1); }
+function toBib(recs){
+  return recs.map(function(r,i){
+    var f=[];
+    if(r.title)f.push("  title = {"+r.title+"}");
+    if(r.authors.length)f.push("  author = {"+r.authors.join(" and ")+"}");
+    if(r.year)f.push("  year = {"+r.year+"}");
+    if(r.journal)f.push("  journal = {"+r.journal+"}");
+    if(r.volume)f.push("  volume = {"+r.volume+"}");
+    if(r.issue)f.push("  number = {"+r.issue+"}");
+    if(r.pages)f.push("  pages = {"+r.pages+"}");
+    if(r.doi)f.push("  doi = {"+normDOI(r.doi)+"}");
+    return "@"+(r.type&&/art|jour/i.test(r.type)?"article":"article")+"{"+bibKey(r,i)+",\n"+f.join(",\n")+"\n}";
+  }).join("\n\n");
+}
+function csvCell(s){ s=String(s==null?"":s); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+function toCSV(recs){
+  var head=["Title","Authors","Year","Journal","Volume","Issue","Pages","DOI","Source","Format"];
+  var lines=[head.join(",")];
+  recs.forEach(function(r){ lines.push([r.title,r.authors.join("; "),r.year,r.journal,r.volume,r.issue,r.pages,normDOI(r.doi),r.src,r.fmt].map(csvCell).join(",")); });
+  return lines.join("\n");
+}
+function download(text,name,mime){
+  var blob=new Blob([text],{type:mime||"text/plain"});
+  var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1500);
+}
+document.querySelector(".export-row").addEventListener("click",function(e){
+  var b=e.target.closest("button[data-fmt]"); if(!b)return;
+  var fmt=b.getAttribute("data-fmt");
+  if(fmt==="ris")download(toRIS(keptRecords()),"deduplicated.ris");
+  else if(fmt==="bib")download(toBib(keptRecords()),"deduplicated.bib");
+  else if(fmt==="csv")download(toCSV(keptRecords()),"deduplicated.csv","text/csv");
+  else if(fmt==="removed")download(toCSV(removedRecords()),"removed-duplicates.csv","text/csv");
+});
+
+/* ---------------- file intake ---------------- */
+function readFiles(list){
+  Array.prototype.forEach.call(list,function(file){
+    var rd=new FileReader();
+    rd.onload=function(){ var p=detectAndParse(rd.result,file.name); FILES.push({name:file.name,text:rd.result,count:p.recs.length+" recs"}); refreshFileList(); };
+    rd.readAsText(file);
+  });
+}
+$("file").addEventListener("change",function(){ readFiles(this.files); });
+var drop=$("drop");
+drop.addEventListener("click",function(){$("file").click();});
+["dragenter","dragover"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add("over");});});
+["dragleave","drop"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove("over");});});
+drop.addEventListener("drop",function(e){ if(e.dataTransfer&&e.dataTransfer.files)readFiles(e.dataTransfer.files); });
+
+$("parseBtn").onclick=run;
+$("thresh").addEventListener("input",function(){$("threshVal").textContent=this.value+"%";});
+$("fuzzy").addEventListener("change",function(){$("threshWrap").style.opacity=this.checked?"1":".45";});
+
+$("demo").onclick=function(){
+  $("paste").value=
+"TY  - JOUR\nTI  - Elimination of Grapevine leafroll-associated virus 3 by thermotherapy and meristem culture\nAU  - Smith, J\nAU  - Doe, A\nPY  - 2019\nJO  - Plant Disease\nDO  - 10.1094/PDIS-01-19-0001\nER  - \n\nTY  - JOUR\nTI  - Elimination of grapevine leafroll associated virus 3 by thermotherapy and meristem culture\nAU  - Smith, John\nPY  - 2019\nJO  - Plant Dis.\nDO  - 10.1094/PDIS-01-19-0001\nER  - \n\nTY  - JOUR\nTI  - RT-qPCR detection of grapevine viruses in field samples\nAU  - Lee, K\nPY  - 2021\nJO  - Journal of Virological Methods\nDO  - 10.1016/j.jviromet.2021.114000\nER  - \n\nTY  - JOUR\nTI  - RT-qPCR detection of grapevine viruses in field samples\nAU  - Lee, Kwang\nPY  - 2021\nJO  - J Virol Methods\nER  - ";
+  setMsg("Example loaded — now click “Find duplicates”.");
+};
+</script>
+</body>
+</html>

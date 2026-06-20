@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Molecular biology toolkit — sequence, Tm, quantification</title>
+<meta name="description" content="Free, offline molecular biology calculators: reverse complement, %GC, melting temperature, translation, A260 nucleic-acid quantification, ng/pmol conversions, and oligo molecular weight. Runs entirely in your browser.">
+<meta name="author" content="Mafatlal M. Kher">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
+    --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
+    --teal:#127C73;--teal-deep:#0C5C55;--teal-bg:#E0F0EE;--teal-line:#AEDBD5;
+    --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 8% -5%,rgba(18,124,115,.06),transparent 40%);}
+  a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 22px;border-bottom:1px solid var(--rule);margin-bottom:24px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:72ch;margin:0}
+  .tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+  .tab{font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 15px;border:1px solid var(--rule-strong);border-radius:999px;background:#fff;color:var(--ink-soft);cursor:pointer}
+  .tab.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .panel{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
+  .panel h2{font-family:"Fraunces",serif;font-size:19px;font-weight:600;margin:0 0 4px}
+  .panel .sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 16px}
+  textarea{width:100%;min-height:90px;resize:vertical;border:1px solid var(--rule-strong);border-radius:11px;padding:12px 13px;font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper);line-height:1.6;letter-spacing:.03em}
+  textarea:focus{outline:none;border-color:var(--go)}
+  .field{display:flex;flex-direction:column;gap:5px}
+  label.fl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+  input[type=number],input[type=text],select{border:1px solid var(--rule-strong);border-radius:8px;padding:9px 10px;font-family:"JetBrains Mono",monospace;font-size:14px;background:var(--paper);color:var(--ink)}
+  select{font-family:inherit}
+  input:focus,select:focus{outline:none;border-color:var(--go)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+  .row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .stat{background:var(--paper);border:1px solid var(--rule);border-radius:11px;padding:11px 15px;min-width:90px}
+  .stat .num{font-family:"Fraunces",serif;font-size:22px;font-weight:600;line-height:1;color:var(--teal-deep)}
+  .stat .lbl{font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.07em;margin-top:5px}
+  .outbox{margin-top:14px}
+  .outbox .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+  .outbox .h .t{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint)}
+  pre.seqout{margin:0;background:#FCFAF6;border:1px solid var(--rule-strong);border-radius:9px;padding:11px 13px;font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:1.7;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow:auto}
+  .copy{font-family:inherit;font-size:11.5px;font-weight:600;color:var(--teal-deep);background:#fff;border:1px solid var(--teal-line);border-radius:7px;padding:5px 11px;cursor:pointer}
+  .copy.done{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .result{margin-top:16px;background:var(--teal-bg);border:1px solid var(--teal-line);border-radius:11px;padding:14px 17px}
+  .result .big{font-family:"Fraunces",serif;font-size:25px;font-weight:600;color:var(--teal-deep)}
+  .result .sub2{font-size:13px;color:var(--ink-soft);margin-top:5px;line-height:1.5}
+  .hidden{display:none}
+  .note{font-size:12.5px;color:var(--ink-faint);margin-top:13px;line-height:1.55}
+  footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
+  footer.foot a{color:var(--go-deep)}
+  .ex{font-size:12px;color:var(--teal-deep);background:none;border:1px dashed var(--teal-line);border-radius:999px;padding:4px 11px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">At the bench</div>
+    <h1>Molecular biology toolkit</h1>
+    <p class="lede">Everyday DNA, RNA, and oligo calculations, all running on your own device. Nothing is sent anywhere, so it works offline and with confidential sequences.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" data-t="seq">Sequence</button>
+    <button class="tab" data-t="quant">A260 quantification</button>
+    <button class="tab" data-t="moles">Mass ↔ moles</button>
+    <button class="tab" data-t="oligo">Oligo MW</button>
+  </div>
+
+  <!-- SEQUENCE -->
+  <section class="panel" data-pane="seq">
+    <h2>Sequence analysis</h2>
+    <p class="sub">Paste a DNA or RNA sequence (FASTA header and spaces/numbers are ignored). Everything updates as you type.</p>
+    <textarea id="seq" placeholder="e.g. ATGGCTAGCAAAGGAGAAGAACTTTTCACTGGA…"></textarea>
+    <div style="margin-top:8px"><button class="ex" id="seqEx">Load example</button></div>
+    <div class="stats" id="seqStats"></div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="result" style="background:#fff;border-color:var(--rule)"><div class="lbl" style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.07em">Tm — Wallace (≤14 nt)</div><div class="big" id="tmW">–</div><div class="sub2">2×(A+T) + 4×(G+C)</div></div>
+      <div class="result" style="background:#fff;border-color:var(--rule)"><div class="lbl" style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.07em">Tm — %GC (&gt;14 nt)</div><div class="big" id="tmGC">–</div><div class="sub2">81.5 + 0.41·%GC − 675/N</div></div>
+    </div>
+
+    <div class="outbox"><div class="h"><span class="t">Reverse complement</span><button class="copy" data-copy="rc">Copy</button></div><pre class="seqout" id="rc"></pre></div>
+    <div class="outbox"><div class="h"><span class="t">RNA transcript (sense)</span><button class="copy" data-copy="rna">Copy</button></div><pre class="seqout" id="rna"></pre></div>
+    <div class="outbox"><div class="h"><span class="t">Protein — translation, frame +1 (• = stop)</span><button class="copy" data-copy="prot">Copy</button></div><pre class="seqout" id="prot"></pre></div>
+    <p class="note">Tm estimates are quick approximations at roughly 50 mM monovalent salt. For primer and probe design, a nearest-neighbour calculation that accounts for salt and oligo concentration is more accurate. Translation uses the standard genetic code, frame +1 of the strand you entered.</p>
+  </section>
+
+  <!-- QUANTIFICATION -->
+  <section class="panel hidden" data-pane="quant">
+    <h2>Nucleic-acid quantification (A260)</h2>
+    <p class="sub">Convert a spectrophotometer reading into concentration using the Beer–Lambert relationship for nucleic acids.</p>
+    <div class="grid">
+      <div class="field"><label class="fl">A260 reading</label><input type="number" id="q_a260" step="0.001" value="0.250"></div>
+      <div class="field"><label class="fl">Nucleic acid</label><select id="q_type">
+        <option value="50">Double-stranded DNA (50)</option>
+        <option value="33">Single-stranded DNA (33)</option>
+        <option value="40">RNA (40)</option>
+        <option value="33b">ssDNA oligo (≈33)</option>
+      </select></div>
+      <div class="field"><label class="fl">Dilution factor (×)</label><input type="number" id="q_dil" step="0.1" value="1"></div>
+      <div class="field"><label class="fl">A280 (optional)</label><input type="number" id="q_a280" step="0.001" value="0.130"></div>
+      <div class="field"><label class="fl">A230 (optional)</label><input type="number" id="q_a230" step="0.001" value=""></div>
+    </div>
+    <div class="result"><div class="big" id="q_conc">–</div><div class="sub2" id="q_detail"></div></div>
+    <p class="note">Concentration = A260 × factor × dilution. The factor is the µg·mL⁻¹ that gives an absorbance of 1.0 in a 1 cm path: 50 for dsDNA, 33 for ssDNA, 40 for RNA. µg·mL⁻¹ equals ng·µL⁻¹. A260/A280 near 1.8 (DNA) or 2.0 (RNA) and A260/A230 of 2.0–2.2 indicate clean preparations.</p>
+  </section>
+
+  <!-- MASS / MOLES -->
+  <section class="panel hidden" data-pane="moles">
+    <h2>Mass ↔ moles ↔ copies</h2>
+    <p class="sub">Convert between mass and amount of substance for a nucleic acid of known length. Enter a length and one amount; the rest are computed.</p>
+    <div class="grid">
+      <div class="field"><label class="fl">Type</label><select id="m_type">
+        <option value="650">dsDNA (≈650 g/mol per bp)</option>
+        <option value="330">ssDNA (≈330 g/mol per nt)</option>
+        <option value="340">ssRNA (≈340 g/mol per nt)</option>
+      </select></div>
+      <div class="field"><label class="fl">Length (bp or nt)</label><input type="number" id="m_len" value="1000"></div>
+      <div class="field"><label class="fl">Mass (ng)</label><input type="number" id="m_ng" value="100" step="any"></div>
+      <div class="field"><label class="fl">Amount (pmol)</label><input type="number" id="m_pmol" value="" step="any"></div>
+      <div class="field"><label class="fl">Volume (µL, optional)</label><input type="number" id="m_vol" value="" step="any"></div>
+    </div>
+    <div class="result"><div class="big" id="m_out">–</div><div class="sub2" id="m_detail"></div></div>
+    <p class="note">Edit mass or amount and the other follows. Molecular weight ≈ length × (650 dsDNA / 330 ssDNA / 340 ssRNA). One µg of 1 kb dsDNA ≈ 1.52 pmol. Copy number = moles × 6.022×10²³.</p>
+  </section>
+
+  <!-- OLIGO -->
+  <section class="panel hidden" data-pane="oligo">
+    <h2>Oligonucleotide molecular weight</h2>
+    <p class="sub">For a synthetic single-stranded DNA oligo (5′-OH, no modifications).</p>
+    <textarea id="o_seq" placeholder="e.g. ACGTTGCAGTCCGATTACAG"></textarea>
+    <div class="result"><div class="big" id="o_out">–</div><div class="sub2" id="o_detail"></div></div>
+    <div class="grid" style="margin-top:14px">
+      <div class="field"><label class="fl">Resuspend mass (nmol)</label><input type="number" id="o_nmol" value="" step="any" placeholder="from tube label"></div>
+      <div class="field"><label class="fl">Target stock (µM)</label><input type="number" id="o_uM" value="100" step="any"></div>
+    </div>
+    <div class="result" id="o_resBox" style="background:#fff;border-color:var(--rule)"><div class="big" id="o_res">–</div><div class="sub2">Volume of water/TE to add for the target stock concentration.</div></div>
+    <p class="note">MW = (nA·313.21 + nT·304.20 + nC·289.18 + nG·329.21) − 61.96 g/mol (anhydrous, IDT convention). To make a stock: volume (µL) = nmol ÷ µM × 1000.</p>
+  </section>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT). All calculations run locally. These are standard textbook estimates; for critical work confirm against your reagent supplier's values and a dedicated primer-design tool.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+
+/* ---------- tabs ---------- */
+document.querySelector(".tabs").addEventListener("click",function(e){
+  var t=e.target.closest(".tab"); if(!t)return;
+  document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+  var pane=t.getAttribute("data-t");
+  document.querySelectorAll("[data-pane]").forEach(function(p){p.classList.toggle("hidden",p.getAttribute("data-pane")!==pane);});
+});
+
+/* ---------- sequence ---------- */
+function cleanSeq(s){ return String(s).replace(/^>.*$/gm,"").replace(/[^A-Za-z]/g,"").toUpperCase(); }
+var COMP={A:"T",T:"A",G:"C",C:"G",U:"A",N:"N",R:"Y",Y:"R",S:"S",W:"W",K:"M",M:"K",B:"V",V:"B",D:"H",H:"D"};
+function revComp(s,isRNA){ var out=""; for(var i=s.length-1;i>=0;i--){ var c=COMP[s[i]]||"N"; if(isRNA&&c==="T")c="U"; out+=c; } return out; }
+var CODON={TTT:"F",TTC:"F",TTA:"L",TTG:"L",CTT:"L",CTC:"L",CTA:"L",CTG:"L",ATT:"I",ATC:"I",ATA:"I",ATG:"M",
+GTT:"V",GTC:"V",GTA:"V",GTG:"V",TCT:"S",TCC:"S",TCA:"S",TCG:"S",CCT:"P",CCC:"P",CCA:"P",CCG:"P",
+ACT:"T",ACC:"T",ACA:"T",ACG:"T",GCT:"A",GCC:"A",GCA:"A",GCG:"A",TAT:"Y",TAC:"Y",TAA:"*",TAG:"*",
+CAT:"H",CAC:"H",CAA:"Q",CAG:"Q",AAT:"N",AAC:"N",AAA:"K",AAG:"K",GAT:"D",GAC:"D",GAA:"E",GAG:"E",
+TGT:"C",TGC:"C",TGA:"*",TGG:"W",CGT:"R",CGC:"R",CGA:"R",CGG:"R",AGT:"S",AGC:"S",AGA:"R",AGG:"R",
+GGT:"G",GGC:"G",GGA:"G",GGG:"G"};
+function translate(s){ var dna=s.replace(/U/g,"T"); var p=""; for(var i=0;i+3<=dna.length;i+=3){ var aa=CODON[dna.substr(i,3)]; p+=(aa==="*"?"•":(aa||"X")); } return p; }
+function analyzeSeq(){
+  var raw=$("seq").value, s=cleanSeq(raw);
+  var isRNA=s.indexOf("U")>=0 && s.indexOf("T")<0;
+  var n=s.length;
+  var a=(s.match(/A/g)||[]).length,c=(s.match(/C/g)||[]).length,g=(s.match(/G/g)||[]).length,
+      t=(s.match(/T/g)||[]).length,u=(s.match(/U/g)||[]).length;
+  var valid=a+c+g+t+u;
+  var gc=valid?((g+c)/valid*100):0;
+  $("seqStats").innerHTML=
+    stat(n,"length (nt)")+stat(gc.toFixed(1)+"%","GC content")+
+    stat(a,"A")+stat(c,"C")+stat(g,"G")+stat(isRNA?u:t,isRNA?"U":"T");
+  // Tm
+  if(n>0){
+    var tmW=2*(a+t+u)+4*(g+c);
+    $("tmW").textContent=(n<=14? tmW.toFixed(0)+" °C":"use →");
+    if(n>14){ var tmGC=81.5+0.41*gc-675/n; $("tmGC").textContent=tmGC.toFixed(1)+" °C"; }
+    else { $("tmGC").textContent="use ←"; }
+  } else { $("tmW").textContent="–"; $("tmGC").textContent="–"; }
+  $("rc").textContent=revComp(s,isRNA)||"";
+  $("rna").textContent=(s.replace(/T/g,"U"))||"";
+  $("prot").textContent=translate(s)||"";
+}
+function stat(num,lbl){ return '<div class="stat"><div class="num">'+num+'</div><div class="lbl">'+lbl+'</div></div>'; }
+$("seq").addEventListener("input",analyzeSeq);
+$("seqEx").onclick=function(){ $("seq").value="ATGGCTAGCAAAGGAGAAGAACTTTTCACTGGAGTTGTCCCAATTCTTGTTGAATTAGATGGTGATGTTAATGGGCACAAATTTTCTGTCAGTGGAGAGGGTGAAGGTGATGCTACATACGGAAAGCTTACCCTTAAATTTATTTGCACTACTGGAAAACTACCTGTTCCATGG"; analyzeSeq(); };
+
+/* ---------- A260 quantification ---------- */
+function quant(){
+  var a260=parseFloat($("q_a260").value)||0, dil=parseFloat($("q_dil").value)||1;
+  var fsel=$("q_type").value, f=parseFloat(fsel)||50;
+  var conc=a260*f*dil; // µg/mL == ng/µL
+  $("q_conc").textContent=fmt(conc)+" ng·µL⁻¹";
+  var det="= "+fmt(conc)+" µg·mL⁻¹ = "+fmt(conc/1000)+" µg·µL⁻¹.";
+  var a280=parseFloat($("q_a280").value), a230=parseFloat($("q_a230").value);
+  if(a280>0) det+="  A260/A280 = "+(a260/a280).toFixed(2)+".";
+  if(a230>0) det+="  A260/A230 = "+(a260/a230).toFixed(2)+".";
+  $("q_detail").textContent=det;
+}
+["q_a260","q_type","q_dil","q_a280","q_a230"].forEach(function(id){$(id).addEventListener("input",quant);});
+
+/* ---------- mass/moles ---------- */
+var molesLock=null;
+function moles(src){
+  var per=parseFloat($("m_type").value)||650, len=parseFloat($("m_len").value)||0;
+  var mw=per*len;
+  var ng=parseFloat($("m_ng").value), pmol=parseFloat($("m_pmol").value);
+  if(!mw){ $("m_out").textContent="–"; $("m_detail").textContent="Enter a length."; return; }
+  if(src==="ng" && !isNaN(ng)){ pmol=ng*1000/mw; $("m_pmol").value=round(pmol); }
+  else if(src==="pmol" && !isNaN(pmol)){ ng=pmol*mw/1000; $("m_ng").value=round(ng); }
+  else { if(!isNaN(ng)){ pmol=ng*1000/mw; $("m_pmol").value=round(pmol);} else if(!isNaN(pmol)){ ng=pmol*mw/1000; $("m_ng").value=round(ng);} }
+  if(isNaN(ng)&&isNaN(pmol)){ $("m_out").textContent="–"; return; }
+  var copies=pmol*1e-12*6.02214076e23;
+  $("m_out").textContent=round(pmol)+" pmol  ·  "+round(ng)+" ng";
+  var vol=parseFloat($("m_vol").value);
+  var det="MW ≈ "+fmt(mw)+" g/mol. Copies ≈ "+sci(copies)+".";
+  if(vol>0){ det+="  At "+vol+" µL: "+round(ng/vol)+" ng·µL⁻¹, "+round(pmol/vol*1000)+" nM.";}
+  $("m_detail").textContent=det;
+}
+$("m_ng").addEventListener("input",function(){moles("ng");});
+$("m_pmol").addEventListener("input",function(){moles("pmol");});
+["m_type","m_len","m_vol"].forEach(function(id){$(id).addEventListener("input",function(){moles();});});
+
+/* ---------- oligo ---------- */
+function oligo(){
+  var s=cleanSeq($("o_seq").value).replace(/U/g,"T");
+  var nA=(s.match(/A/g)||[]).length,nT=(s.match(/T/g)||[]).length,nC=(s.match(/C/g)||[]).length,nG=(s.match(/G/g)||[]).length;
+  var n=nA+nT+nC+nG;
+  if(!n){ $("o_out").textContent="–"; $("o_detail").textContent=""; $("o_res").textContent="–"; return; }
+  var mw=nA*313.21+nT*304.20+nC*289.18+nG*329.21-61.96;
+  $("o_out").textContent=fmt(mw)+" g/mol";
+  $("o_detail").textContent=n+" nt · "+nA+"A "+nC+"C "+nG+"G "+nT+"T · GC "+((nG+nC)/n*100).toFixed(0)+"%";
+  var nmol=parseFloat($("o_nmol").value), uM=parseFloat($("o_uM").value);
+  if(nmol>0&&uM>0){ var vol=nmol/uM*1000; $("o_res").textContent="Add "+round(vol)+" µL"; }
+  else $("o_res").textContent="–";
+}
+["o_seq","o_nmol","o_uM"].forEach(function(id){$(id).addEventListener("input",oligo);});
+
+/* ---------- helpers ---------- */
+function round(x){ if(!isFinite(x))return "0"; var a=Math.abs(x); if(a===0)return "0"; if(a<0.001)return x.toExponential(2); if(a<1)return x.toPrecision(3); if(a<1000)return (Math.round(x*1000)/1000).toString(); return Math.round(x).toLocaleString(); }
+function fmt(x){ if(!isFinite(x))return "0"; return x>=1000?Math.round(x).toLocaleString():(Math.round(x*1000)/1000).toString(); }
+function sci(x){ if(!isFinite(x)||x===0)return "0"; return x.toExponential(2); }
+function copyText(t){ navigator.clipboard&&navigator.clipboard.writeText(t); }
+document.querySelectorAll("[data-copy]").forEach(function(b){
+  b.addEventListener("click",function(){ var id=b.getAttribute("data-copy"); copyText($(id).textContent); b.classList.add("done"); b.textContent="Copied ✓"; setTimeout(function(){b.classList.remove("done");b.textContent="Copy";},1300); });
+});
+
+/* init */
+analyzeSeq(); quant(); moles(); oligo();
+</script>
+</body>
+</html>

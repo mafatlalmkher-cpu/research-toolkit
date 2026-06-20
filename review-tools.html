@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free tools for your whole review · Research Toolkit</title>
+<meta name="description" content="A stage-by-stage guide to free (and a few paid) tools for a literature review: protocol registration, searching, references, full-text finding, de-duplication, screening, citation chasing, risk of bias, meta-analysis, and reporting. Each stage gives 3 to 5 options, a short comparison, a default pick, and when to keep the tool you already use.">
+<meta name="author" content="Mafatlal M. Kher">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;--rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--green:#2A6F4E;--green-deep:#1E5439;--green-bg:#E4F0E9;--green-line:#B9D9C7;--amber-bg:#FBEEE1;--amber-deep:#9C4D12;--amber-line:#E8C9A8;--shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);}
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 8% -5%,rgba(42,111,78,.06),transparent 42%)}
+  a{color:var(--go-deep)}
+  a:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 22px;border-bottom:1px solid var(--rule);margin-bottom:22px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:74ch;margin:0 0 10px}
+  .rule-note{font-size:14px;color:var(--ink-faint);max-width:74ch;margin:10px 0 0;padding:12px 14px;background:#fff;border:1px solid var(--rule);border-radius:12px}
+  nav.toc{margin:18px 0 6px;font-size:13.5px;color:var(--ink-soft);columns:2;column-gap:26px}
+  nav.toc a{display:block;padding:3px 0;text-decoration:none}
+  nav.toc a:hover{text-decoration:underline}
+  section.stage{margin:30px 0 0;padding-top:22px;border-top:1px solid var(--rule)}
+  section.stage h2{font-family:"Fraunces",serif;font-size:22px;font-weight:600;margin:0 0 4px}
+  .stage .what{color:var(--ink-soft);font-size:14.5px;margin:0 0 14px;max-width:74ch}
+  .tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);background:#fff}
+  table{border-collapse:collapse;width:100%;font-size:13.7px;min-width:560px}
+  th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--rule);vertical-align:top}
+  thead th{background:#F4EEE3;font-weight:700;color:var(--ink);font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+  tbody tr:last-child td{border-bottom:none}
+  td.tool{font-weight:700;white-space:nowrap}
+  td.tool .yours{display:block;font-size:11px;font-weight:600;color:var(--green-deep);letter-spacing:.02em}
+  .cost-free{color:var(--green-deep);font-weight:600}
+  .cost-paid{color:var(--amber-deep);font-weight:600}
+  .pick{margin:13px 0 0;font-size:14px;color:var(--ink);background:var(--green-bg);border:1px solid var(--green-line);border-radius:11px;padding:11px 14px}
+  .pick b{color:var(--green-deep)}
+  .pick.amber{background:var(--amber-bg);border-color:var(--amber-line)}
+  footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.7}
+  footer.foot a{color:var(--go-deep)}
+  .cites{font-size:12px;color:var(--ink-faint);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">Literature workflow</div>
+    <h1>Free tools for your whole review</h1>
+    <p class="lede">A literature review runs through about ten stages. This toolkit covers some of them; for the rest, free tools already do the job well. Each stage below gives a few options, a short comparison, and a clear default, so you can choose without guessing.</p>
+    <p class="rule-note"><b>One rule throughout:</b> a tool you already know beats a better one you would have to relearn in the middle of a project. Switch only to escape a paywall, to gain offline access you lack, or to stop losing data, and switch between projects, not during one. Where a stage says "stick with what you have," that is deliberate advice to save your time.</p>
+    <nav class="toc">
+      <a href="#protocol">1. Register your protocol</a>
+      <a href="#search">2. Build your search</a>
+      <a href="#refs">3. Manage your references</a>
+      <a href="#fulltext">4. Find the free full text</a>
+      <a href="#dedupe">5. De-duplicate</a>
+      <a href="#screen">6. Screen titles and abstracts</a>
+      <a href="#citation">7. Chase citations</a>
+      <a href="#rob">8. Assess risk of bias</a>
+      <a href="#meta">9. Meta-analysis and synthesis</a>
+      <a href="#report">10. Report it (PRISMA)</a>
+    </nav>
+  </header>
+
+  <section class="stage" id="protocol">
+    <h2>1. Register your protocol</h2>
+    <p class="what">Recording your plan before you start screening protects the review from later second-guessing and is expected by most journals.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">PROSPERO</td><td class="cost-free">Free</td><td>Web</td><td>The standard register for reviews with a health-related outcome. Approval in a few days.</td></tr>
+        <tr><td class="tool">OSF Registries</td><td class="cost-free">Free</td><td>Web</td><td>Any field, including plant science and ecology where PROSPERO does not fit. Immediate.</td></tr>
+        <tr><td class="tool">INPLASY</td><td class="cost-paid">~US$70</td><td>Web</td><td>Same-day registration with a DOI, only if you need speed and can pay the fee.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> PROSPERO if your review has a health outcome, otherwise OSF Registries (free, any topic). Register before formal screening; even a small review benefits.</p>
+  </section>
+
+  <section class="stage" id="search">
+    <h2>2. Build your search</h2>
+    <p class="what">Turn your question into correct, reproducible Boolean queries for several databases.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">QueryBee<span class="yours">in this toolkit</span></td><td class="cost-free">Free</td><td>Web / offline</td><td>Build correctly fielded queries for ten databases from concept blocks. Start here.</td></tr>
+        <tr><td class="tool">Polyglot Search Translator</td><td class="cost-free">Free</td><td>Web</td><td>Translate one finished query into other database syntaxes, or check a translation.</td></tr>
+        <tr><td class="tool">litsearchr</td><td class="cost-free">Free</td><td>R install</td><td>Term discovery and search building in R, if you are comfortable coding.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> <a href="https://mafatlalmkher-cpu.github.io/querybee/">QueryBee</a> to build, Polyglot to double-check a translation. Stick with what you have if a librarian already gave you a validated string.</p>
+  </section>
+
+  <section class="stage" id="refs">
+    <h2>3. Manage your references</h2>
+    <p class="what">A reference manager stores records and PDFs, removes duplicates, and inserts citations as you write. It is the backbone the other stages feed into.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs / offline</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">Zotero</td><td class="cost-free">Free, open source</td><td>Desktop + web + phone, offline</td><td>The default if you have no tool. Private, no lock-in, 300 MB free file storage.</td></tr>
+        <tr><td class="tool">Mendeley Reference Manager</td><td class="cost-free">Free</td><td>Desktop + web, sync</td><td>The current Mendeley. Fits people already in the Scopus and Elsevier world. 2 GB.</td></tr>
+        <tr><td class="tool">Mendeley Desktop</td><td class="cost-free">Free, existing users</td><td>Desktop, offline</td><td>Maintenance only and no new downloads, but it keeps working. Keep it if you use it; move to Reference Manager in time.</td></tr>
+        <tr><td class="tool">EndNote</td><td class="cost-paid">Paid (~US$250; edu ~$205)</td><td>Desktop, offline</td><td>Large libraries and heavy citing. Worth it mainly when your institution provides it free.</td></tr>
+        <tr><td class="tool">RefWorks</td><td class="cost-paid">Institution only</td><td>Web</td><td>Use only if your library already pays. Some are dropping it, so export your library now and then.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> Zotero if you are starting fresh. Already on Mendeley or EndNote and content: keep it, and do not switch mid-review.</p>
+  </section>
+
+  <section class="stage" id="fulltext">
+    <h2>4. Find the free full text</h2>
+    <p class="what">Most paywalled papers have a legal open-access copy somewhere. These tools surface it, which matters most when you have no journal subscriptions.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">Unpaywall</td><td class="cost-free">Free</td><td>Browser add-on</td><td>One click to a legal open-access copy on any journal page. Install this first.</td></tr>
+        <tr><td class="tool">EndNote Click</td><td class="cost-free">Free</td><td>Browser add-on</td><td>Finds PDFs across PubMed, Web of Science, and 20,000 sites. Complements Unpaywall.</td></tr>
+        <tr><td class="tool">CORE and Europe PMC</td><td class="cost-free">Free</td><td>Web</td><td>Search open repositories directly when an add-on finds nothing.</td></tr>
+        <tr><td class="tool">Library / interlibrary loan</td><td class="cost-free">Free to you</td><td>n/a</td><td>For anything still locked, ask your library. Interlibrary loan is free at most institutions.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> install Unpaywall and EndNote Click together; they cover different sources. This is the single biggest help if you lack subscriptions.</p>
+  </section>
+
+  <section class="stage" id="dedupe">
+    <h2>5. De-duplicate</h2>
+    <p class="what">Searching several databases collects the same paper many times. Remove duplicates before you read, not after.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">De-duplicator<span class="yours">in this toolkit</span></td><td class="cost-free">Free</td><td>Web / offline</td><td>Merge RIS, BibTeX, and CSV and remove duplicates by DOI and fuzzy title. Start here.</td></tr>
+        <tr><td class="tool">SR-Accelerator Deduplicator</td><td class="cost-free">Free</td><td>Web</td><td>A web alternative with a different matching method, useful for a second pass.</td></tr>
+        <tr><td class="tool">Zotero or Mendeley</td><td class="cost-free">Free</td><td>Desktop</td><td>Both de-duplicate within a library, handy if your records already live there.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> the <a href="dedupe.html">toolkit de-duplicator</a>, or Zotero if your records are already in it. Always de-duplicate before screening.</p>
+  </section>
+
+  <section class="stage" id="screen">
+    <h2>6. Screen titles and abstracts</h2>
+    <p class="what">Decide which records to keep. Dedicated tools do this better than a single web page, so the toolkit recommends them.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">Catchii</td><td class="cost-free">Free, no account</td><td>Web / phone, offline</td><td>No install. The closest fit for limited bandwidth. The default for most people.</td></tr>
+        <tr><td class="tool">ASReview</td><td class="cost-free">Free, open source</td><td>Local install</td><td>Machine-learning prioritisation that saves time on large sets.</td></tr>
+        <tr><td class="tool">Rayyan</td><td class="cost-free">Free tier (account)</td><td>Web</td><td>Two-reviewer blind screening with conflict resolution.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> Catchii. See the toolkit's <a href="screen.html">screening guide</a> for the full comparison and links.</p>
+  </section>
+
+  <section class="stage" id="citation">
+    <h2>7. Chase citations (snowballing)</h2>
+    <p class="what">Following the references and citations of the papers you already have catches studies your keyword search missed.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">Citationchaser</td><td class="cost-free">Free</td><td>Web</td><td>Backward and forward citation chasing built for systematic reviews, exports to merge with your search. Start here.</td></tr>
+        <tr><td class="tool">Research Rabbit</td><td class="cost-free">Free</td><td>Web</td><td>Visual "papers like this" discovery for exploring a field early on.</td></tr>
+        <tr><td class="tool">Connected Papers</td><td class="cost-paid">Free tier (5 graphs/mo)</td><td>Web</td><td>One-off citation maps, fine within the monthly free limit.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> Citationchaser for a systematic review, because its output is transparent and merges with your records. Research Rabbit for early exploration.</p>
+  </section>
+
+  <section class="stage" id="rob">
+    <h2>8. Assess risk of bias</h2>
+    <p class="what">Judge how much to trust each included study, then turn the judgements into the figures journals expect.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">RoB 2 / ROBINS-I</td><td class="cost-free">Free</td><td>Excel / templates</td><td>Cochrane's standard tools: RoB 2 for randomised trials, ROBINS-I for non-randomised studies.</td></tr>
+        <tr><td class="tool">robvis</td><td class="cost-free">Free</td><td>Web</td><td>Turns your assessments into the traffic-light and summary plots for the manuscript.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> the Cochrane tool that matches your study design, then robvis for the figure. No paid tool is needed here.</p>
+  </section>
+
+  <section class="stage" id="meta">
+    <h2>9. Meta-analysis and synthesis</h2>
+    <p class="what">Combine the numbers across studies. This is a statistics job; do it in a real stats tool, not a query builder.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">jamovi</td><td class="cost-free">Free, open source</td><td>Desktop, offline</td><td>Point-and-click meta-analysis (MAJOR module). The easiest if you do not code.</td></tr>
+        <tr><td class="tool">JASP</td><td class="cost-free">Free, open source</td><td>Desktop, offline</td><td>Similar to jamovi, with classical and Bayesian meta-analysis.</td></tr>
+        <tr><td class="tool">Meta-Essentials</td><td class="cost-free">Free</td><td>Excel</td><td>A set of workbooks if you would rather stay in a spreadsheet.</td></tr>
+        <tr><td class="tool">R (metafor)</td><td class="cost-free">Free</td><td>R install</td><td>The most flexible option, for those comfortable writing code.</td></tr>
+        <tr><td class="tool">RevMan Web</td><td class="cost-free">Free in Research4Life countries and for Cochrane reviews; else from ~&pound;80/yr</td><td>Web</td><td>The full Cochrane workflow. Free for many low-income-country researchers.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> jamovi or JASP for a clear interface and no coding. If you are in a Research4Life country, RevMan Web is free, so it is worth learning.</p>
+  </section>
+
+  <section class="stage" id="report">
+    <h2>10. Report it (PRISMA)</h2>
+    <p class="what">Show that your review is complete and reproducible. The flow diagram and checklists are how reviewers check that.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool</th><th>Cost</th><th>Runs</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td class="tool">PRISMA flow diagram<span class="yours">in this toolkit</span></td><td class="cost-free">Free</td><td>Web / offline</td><td>Build the PRISMA 2020 flow diagram from your counts and export it. Start here.</td></tr>
+        <tr><td class="tool">PRISMA 2020 + PRISMA-S</td><td class="cost-free">Free</td><td>Web / PDF</td><td>The item checklist and the search-reporting checklist; fill them alongside your manuscript.</td></tr>
+        <tr><td class="tool">EQUATOR Network</td><td class="cost-free">Free</td><td>Web</td><td>Finds the correct reporting guideline for any study type, not only reviews.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pick"><b>Default:</b> the toolkit's <a href="prisma-flow.html">PRISMA flow diagram</a> plus the PRISMA 2020 checklist. Use EQUATOR to confirm you are following the right guideline.</p>
+  </section>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> &middot; free &amp; open source (MIT), by Mafatlal M. Kher (<a href="https://orcid.org/0000-0001-5600-0040" target="_blank" rel="noopener">ORCID 0000-0001-5600-0040</a>). The toolkit is independent and not affiliated with any tool listed here. Free and paid status was current when written; check each tool's site before relying on it, since plans change.
+    <p class="cites">When you use a tool, cite it. Key ones: ASReview (van de Schoot et al., 2021, <i>Nature Machine Intelligence</i> 3:125&ndash;133, doi:10.1038/s42256-020-00287-7), Citationchaser (Haddaway et al., 2022, <i>Research Synthesis Methods</i> 13:533&ndash;545, doi:10.1002/jrsm.1563), and the PRISMA 2020 statement (Page et al., 2021, <i>BMJ</i> 372:n71, doi:10.1136/bmj.n71).</p>
+  </footer>
+</div>
+</body>
+</html>

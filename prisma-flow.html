@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISMA 2020 flow diagram maker</title>
+<meta name="description" content="Free, browser-based PRISMA 2020 flow diagram generator. Enter your systematic-review record counts and download a publication-ready flow diagram as SVG or PNG. No login, no server.">
+<meta name="author" content="Mafatlal M. Kher">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
+    --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
+    --violet:#4B2E83;--violet-deep:#3A2266;--violet-bg:#ECE6F5;--violet-line:#CDBEE8;
+    --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 8% -5%,rgba(75,46,131,.06),transparent 38%),radial-gradient(circle at 95% 0%,rgba(22,105,92,.045),transparent 40%);}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;align-items:center;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 24px;border-bottom:1px solid var(--rule);margin-bottom:28px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--violet);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px;letter-spacing:-.01em}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:70ch;margin:0}
+  .layout{display:grid;grid-template-columns:380px 1fr;gap:26px;align-items:start}
+  @media(max-width:920px){.layout{grid-template-columns:1fr}}
+  .panel{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px}
+  .panel h2{font-family:"Fraunces",serif;font-size:18px;font-weight:600;margin:0 0 4px}
+  .grp{margin:18px 0 0;padding-top:16px;border-top:1px dashed var(--rule-strong)}
+  .grp:first-of-type{border-top:none;padding-top:0;margin-top:14px}
+  .grp-h{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--violet-deep);font-weight:700;margin-bottom:10px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+  .row label{font-size:13.5px;color:var(--ink-soft);flex:1}
+  .row input[type=number]{width:92px;border:1px solid var(--rule-strong);border-radius:8px;padding:7px 9px;font-family:"JetBrains Mono",monospace;font-size:13.5px;color:var(--ink);background:var(--paper);text-align:right}
+  .row input:focus{outline:none;border-color:var(--go)}
+  .reason{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+  .reason input[type=text]{flex:1;border:1px solid var(--rule-strong);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:13px;background:var(--paper);min-width:0}
+  .reason input[type=number]{width:64px;border:1px solid var(--rule-strong);border-radius:8px;padding:7px 8px;font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper);text-align:right}
+  .reason .del{border:none;background:none;color:var(--danger);font-size:18px;cursor:pointer;padding:0 4px;line-height:1}
+  .mini{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--go-deep);background:#fff;border:1px solid var(--rule-strong);border-radius:8px;padding:6px 11px;cursor:pointer}
+  .mini:hover{border-color:var(--go)}
+  .field-text{width:100%;border:1px solid var(--rule-strong);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13.5px;background:var(--paper);margin-bottom:9px}
+  .toggle-row{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-soft);cursor:pointer;user-select:none}
+  .toggle-row input{width:16px;height:16px;accent-color:var(--go)}
+  .preview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  button.primary{font-family:inherit;font-weight:600;font-size:14px;color:#fff;background:var(--go);border:none;border-radius:10px;padding:10px 18px;cursor:pointer;box-shadow:0 1px 2px rgba(15,76,66,.3);transition:transform .12s,background .14s;display:inline-flex;align-items:center;gap:7px}
+  button.primary:hover{background:var(--go-deep);transform:translateY(-1px)}
+  button.ghost{font-family:inherit;font-weight:600;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--rule-strong);border-radius:10px;padding:9px 15px;cursor:pointer}
+  button.ghost:hover{border-color:var(--ink-faint)}
+  .svg-stage{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:14px;overflow:auto}
+  .svg-stage svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  .hint{font-size:12.5px;color:var(--ink-faint);margin-top:10px;line-height:1.5}
+  footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
+  footer.foot a{color:var(--go-deep)}
+  .warn{color:var(--danger);font-size:12.5px;margin-top:6px;min-height:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">Systematic review reporting</div>
+    <h1>PRISMA 2020 flow diagram maker</h1>
+    <p class="lede">Enter the number of records at each stage of your review. The diagram updates as you type and downloads as SVG (for editing) or PNG (for pasting into a manuscript). Everything runs in your browser; nothing is uploaded.</p>
+  </header>
+
+  <div class="layout">
+    <div class="panel" id="form">
+      <h2>Your numbers</h2>
+
+      <div class="grp">
+        <div class="grp-h">Identification</div>
+        <div class="row"><label>Records from databases</label><input type="number" min="0" id="n_db" value="1200"></div>
+        <div class="row"><label>Records from registers</label><input type="number" min="0" id="n_reg" value="60"></div>
+        <div class="grp-h" style="margin-top:14px">Removed before screening</div>
+        <div class="row"><label>Duplicate records removed</label><input type="number" min="0" id="n_dup" value="320"></div>
+        <div class="row"><label>Removed by automation tools</label><input type="number" min="0" id="n_auto" value="0"></div>
+        <div class="row"><label>Removed for other reasons</label><input type="number" min="0" id="n_other" value="0"></div>
+      </div>
+
+      <div class="grp">
+        <div class="grp-h">Screening</div>
+        <div class="row"><label>Records excluded after screening</label><input type="number" min="0" id="n_excl_screen" value="760"></div>
+        <div class="row"><label>Reports not retrieved (sought – retrieved)</label><input type="number" min="0" id="n_not_retr" value="12"></div>
+      </div>
+
+      <div class="grp">
+        <div class="grp-h">Reports excluded at full text, with reasons</div>
+        <div id="reasons"></div>
+        <button class="mini" id="addReason">+ add reason</button>
+      </div>
+
+      <div class="grp">
+        <div class="grp-h">Included</div>
+        <div class="row"><label>Reports of included studies (if different)</label><input type="number" min="0" id="n_reports_inc" value=""></div>
+        <div class="hint" style="margin-top:0">Leave blank if each included study is one report.</div>
+      </div>
+
+      <div class="grp">
+        <label class="toggle-row"><input type="checkbox" id="useOther"> Add a second arm for studies found via <b>other methods</b> (citation searching, websites, contacts)</label>
+        <div id="otherFields" style="display:none;margin-top:12px">
+          <div class="row"><label>Records identified (other methods)</label><input type="number" min="0" id="o_ident" value="25"></div>
+          <div class="row"><label>Reports not retrieved</label><input type="number" min="0" id="o_not_retr" value="2"></div>
+          <div class="row"><label>Reports excluded at full text</label><input type="number" min="0" id="o_excl" value="8"></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="grp-h">Labels</div>
+        <input class="field-text" id="title" type="text" placeholder="Diagram title (optional)" value="">
+        <input class="field-text" id="unitword" type="text" value="n" title="word used inside (n = …)">
+      </div>
+    </div>
+
+    <div>
+      <div class="preview-head">
+        <h2 style="font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin:0">Diagram</h2>
+        <div style="display:flex;gap:9px">
+          <button class="ghost" id="dlSvg">Download SVG</button>
+          <button class="primary" id="dlPng">Download PNG</button>
+        </div>
+      </div>
+      <div class="warn" id="warn"></div>
+      <div class="svg-stage" id="stage"></div>
+      <p class="hint">Downstream totals (records screened, reports sought, reports assessed, studies included) are computed automatically from the numbers you enter, following the PRISMA 2020 logic. If a computed total is impossible (negative), it is shown in red so you can correct the inputs. Reference: Page MJ et al., <i>BMJ</i> 2021;372:n71.</p>
+    </div>
+  </div>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT). PRISMA 2020 is a reporting guideline by Page and colleagues; this tool is an independent helper and is not affiliated with the PRISMA group.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var reasonsWrap=$("reasons");
+
+function addReason(text,count){
+  var d=document.createElement("div"); d.className="reason";
+  var t=document.createElement("input"); t.type="text"; t.placeholder="reason"; t.value=text||"";
+  var c=document.createElement("input"); c.type="number"; c.min="0"; c.value=(count==null?"":count);
+  var x=document.createElement("button"); x.className="del"; x.innerHTML="&times;"; x.title="remove";
+  x.onclick=function(){d.remove();render();};
+  t.oninput=render; c.oninput=render;
+  d.appendChild(t); d.appendChild(c); d.appendChild(x);
+  reasonsWrap.appendChild(d);
+}
+$("addReason").onclick=function(){addReason("",0);render();};
+addReason("Wrong population",18); addReason("Wrong outcome",11); addReason("Full text unavailable",4);
+
+$("useOther").onchange=function(){ $("otherFields").style.display=this.checked?"block":"none"; render(); };
+
+function num(id){var v=parseInt($(id).value,10); return isNaN(v)?0:Math.max(0,v);}
+function getReasons(){
+  var out=[]; var rows=reasonsWrap.querySelectorAll(".reason");
+  rows.forEach(function(r){
+    var t=r.querySelector('input[type=text]').value.trim();
+    var c=parseInt(r.querySelector('input[type=number]').value,10); if(isNaN(c))c=0;
+    if(t||c) out.push({t:t||"Reason",c:c});
+  });
+  return out;
+}
+
+/* ---------- SVG building ---------- */
+var SVGNS="http://www.w3.org/2000/svg";
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function wrap(text,maxChars){
+  var words=String(text).split(/\s+/),lines=[],cur="";
+  for(var i=0;i<words.length;i++){
+    var w=words[i];
+    if((cur+" "+w).trim().length>maxChars && cur){lines.push(cur);cur=w;}
+    else cur=(cur?cur+" ":"")+w;
+  }
+  if(cur)lines.push(cur);
+  return lines.length?lines:[""];
+}
+function boxLines(title,details,maxChars){
+  var lines=[];
+  wrap(title,maxChars).forEach(function(l){lines.push({t:l,b:true});});
+  (details||[]).forEach(function(d){ wrap(d,maxChars).forEach(function(l){lines.push({t:l,b:false});}); });
+  return lines;
+}
+var FS=12.5, LH=16, PAD=11;
+function boxHeight(lines){return PAD*2+lines.length*LH;}
+function drawBox(x,y,w,lines,fill,stroke){
+  var h=boxHeight(lines);
+  var s='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="7" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.4"/>';
+  var ty=y+PAD+FS-2;
+  s+='<text x="'+(x+w/2)+'" font-family="Hanken Grotesk, sans-serif" font-size="'+FS+'" text-anchor="middle" fill="#211C16">';
+  lines.forEach(function(l,i){
+    s+='<tspan x="'+(x+w/2)+'" y="'+(ty+i*LH)+'" font-weight="'+(l.b?"700":"400")+'">'+esc(l.t)+'</tspan>';
+  });
+  s+='</text>';
+  return {svg:s,h:h};
+}
+function vArrow(x,y1,y2){
+  return '<line x1="'+x+'" y1="'+y1+'" x2="'+x+'" y2="'+(y2-7)+'" stroke="#6A5F52" stroke-width="1.5" marker-end="url(#ah)"/>';
+}
+function hArrow(x1,x2,y){
+  return '<line x1="'+x1+'" y1="'+y+'" x2="'+(x2-7)+'" y2="'+y+'" stroke="#6A5F52" stroke-width="1.5" marker-end="url(#ah)"/>';
+}
+function bandLabel(x,y,h,txt,color){
+  var cy=y+h/2;
+  return '<g><rect x="'+x+'" y="'+y+'" width="26" height="'+h+'" rx="5" fill="'+color+'"/>'+
+    '<text x="'+(x+13)+'" y="'+cy+'" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#fff" text-anchor="middle" transform="rotate(-90 '+(x+13)+' '+cy+')">'+esc(txt)+'</text></g>';
+}
+
+function buildSVG(forExport){
+  var unit=$("unitword").value.trim()||"n";
+  function N(v){return "("+unit+" = "+v+")";}
+  var warn=[];
+
+  var db=num("n_db"),reg=num("n_reg"),dup=num("n_dup"),au=num("n_auto"),oth=num("n_other");
+  var identified=db+reg;
+  var removed=dup+au+oth;
+  var screened=identified-removed;
+  var exclScreen=num("n_excl_screen");
+  var sought=screened-exclScreen;
+  var notRetr=num("n_not_retr");
+  var assessed=sought-notRetr;
+  var reasons=getReasons();
+  var reasonSum=reasons.reduce(function(a,r){return a+r.c;},0);
+  var included=assessed-reasonSum;
+  var reportsInc=$("n_reports_inc").value.trim();
+
+  function chk(v,name){ if(v<0){warn.push(name+" computes to "+v);} return v; }
+  chk(screened,"Records screened"); chk(sought,"Reports sought"); chk(assessed,"Reports assessed"); chk(included,"Studies included");
+
+  var two=$("useOther").checked;
+  var mainX=60, mainW=296, gapV=42, exclX=412, exclW=300;
+  var topPad= $("title").value.trim()?64:34;
+  var y=topPad;
+
+  var parts=[], bands=[];
+  var idTop=y;
+
+  // Box A: identified
+  var aLines=boxLines("Records identified:",["Databases "+N(db),"Registers "+N(reg)],34);
+  var A=drawBox(mainX,y,mainW,aLines,"#ECE6F5","#CDBEE8");
+  // Box A-excl: removed before screening
+  var aeLines=boxLines("Records removed before screening:",["Duplicates "+N(dup),"Automation "+N(au),"Other "+N(oth)],34);
+  var AE=drawBox(exclX,y,exclW,aeLines,"#F7F3EC","#D8CCB8");
+  var aRowH=Math.max(A.h,AE.h);
+  parts.push(A.svg,AE.svg);
+  parts.push(hArrow(mainX+mainW, exclX, y+A.h/2));
+  var idBottom=y+aRowH;
+  y=idBottom+gapV;
+
+  var scrTop=y;
+  // Box C: screened -> excluded
+  var cLines=boxLines("Records screened "+N(Math.max(screened,0)),[],34);
+  var C=drawBox(mainX,y,mainW,cLines,"#fff","#CDBEE8");
+  var ceLines=boxLines("Records excluded "+N(exclScreen),[],34);
+  var CE=drawBox(exclX,y,exclW,ceLines,"#F7F3EC","#D8CCB8");
+  parts.push(C.svg,CE.svg,hArrow(mainX+mainW,exclX,y+C.h/2));
+  y+=Math.max(C.h,CE.h)+gapV;
+
+  // Box D: sought -> not retrieved
+  var dLines=boxLines("Reports sought for retrieval "+N(Math.max(sought,0)),[],34);
+  var D=drawBox(mainX,y,mainW,dLines,"#fff","#CDBEE8");
+  var deLines=boxLines("Reports not retrieved "+N(notRetr),[],34);
+  var DE=drawBox(exclX,y,exclW,deLines,"#F7F3EC","#D8CCB8");
+  parts.push(D.svg,DE.svg,hArrow(mainX+mainW,exclX,y+D.h/2));
+  y+=Math.max(D.h,DE.h)+gapV;
+
+  // Box E: assessed -> excluded with reasons
+  var eLines=boxLines("Reports assessed for eligibility "+N(Math.max(assessed,0)),[],34);
+  var E=drawBox(mainX,y,mainW,eLines,"#fff","#CDBEE8");
+  var exDet=reasons.map(function(r){return r.t+" "+N(r.c);});
+  if(!exDet.length)exDet=["(none listed)"];
+  var eeLines=boxLines("Reports excluded "+N(reasonSum)+":",exDet,34);
+  var EE=drawBox(exclX,y,exclW,eeLines,"#F7F3EC","#D8CCB8");
+  parts.push(E.svg,EE.svg,hArrow(mainX+mainW,exclX,y+E.h/2));
+  var scrBottom=y+Math.max(E.h,EE.h);
+  y=scrBottom+gapV;
+
+  // (vertical arrows for the main column are added below, after the Included box)
+  var incTop=y;
+  var incDet=["Studies included "+N(Math.max(included,0))];
+  if(reportsInc!=="") incDet.push("Reports of included studies ("+unit+" = "+reportsInc+")");
+  var FBOX=drawBox(mainX,y,mainW,boxLines("Included",incDet,34),"#E4F0E9","#B9D9C7");
+  parts.push(FBOX.svg);
+  var incBottom=y+FBOX.h;
+
+  // Now explicit vertical arrows: A->C, C->D, D->E, E->F using stored tops
+  // We need tops: scrTop (C), then D top, E top, incTop.
+  // Recompute tops:
+  // (A bottom)=idBottom ; C top=scrTop
+  // To keep correct, recompute D/E tops:
+  // Instead of tracking, re-derive from heights:
+  var cTop=scrTop;
+  var dTop=cTop+C.h+gapV;
+  var eTop=dTop+D.h+gapV;
+  var fTop=eTop+E.h+gapV;
+  // override y-derived values already used for drawing E and F: they match because we used same gapV sequentially.
+  var cx=mainX+mainW/2;
+  parts.push(vArrow(cx,idBottom,cTop));
+  parts.push(vArrow(cx,cTop+C.h,dTop));
+  parts.push(vArrow(cx,dTop+D.h,eTop));
+  parts.push(vArrow(cx,eTop+E.h,fTop));
+
+  // stage bands
+  bands.push(bandLabel(20,idTop,aRowH,"Identification","#4B2E83"));
+  bands.push(bandLabel(20,scrTop,scrBottom-scrTop,"Screening","#6E4FA8"));
+  bands.push(bandLabel(20,incTop,incBottom-incTop,"Included","#2A6F4E"));
+
+  var totalW=exclX+exclW+18;
+  var totalH=incBottom+24;
+
+  // optional second arm
+  if(two){
+    var o_ident=num("o_ident"),o_nr=num("o_not_retr"),o_ex=num("o_excl");
+    var o_assessed=o_ident-o_nr;
+    var o_inc=o_assessed-o_ex;
+    var armX=totalW+50, armW=290, armEx=armX+armW+40, armExW=250;
+    var oy=topPad;
+    var OI=drawBox(armX,oy,armW,boxLines("Records identified via other methods "+N(o_ident),[],32),"#ECE6F5","#CDBEE8");
+    parts.push(OI.svg); var oiB=oy+OI.h; oy=oiB+gapV;
+    var OS=drawBox(armX,oy,armW,boxLines("Reports sought for retrieval "+N(o_ident),[],32),"#fff","#CDBEE8");
+    var OSe=drawBox(armEx,oy,armExW,boxLines("Not retrieved "+N(o_nr),[],26),"#F7F3EC","#D8CCB8");
+    parts.push(OS.svg,OSe.svg,hArrow(armX+armW,armEx,oy+OS.h/2)); var osB=oy+Math.max(OS.h,OSe.h); oy=osB+gapV;
+    var OA=drawBox(armX,oy,armW,boxLines("Reports assessed for eligibility "+N(Math.max(o_assessed,0)),[],32),"#fff","#CDBEE8");
+    var OAe=drawBox(armEx,oy,armExW,boxLines("Excluded "+N(o_ex),[],26),"#F7F3EC","#D8CCB8");
+    parts.push(OA.svg,OAe.svg,hArrow(armX+armW,armEx,oy+OA.h/2));
+    var oaB=oy+Math.max(OA.h,OAe.h);
+    var acx=armX+armW/2;
+    parts.push(vArrow(acx,oiB,oiB+gapV));       // OI bottom -> OS top
+    parts.push(vArrow(acx,osB,osB+gapV));       // OS bottom -> OA top
+    // diagonal arrow into Included
+    parts.push('<line x1="'+acx+'" y1="'+oaB+'" x2="'+(mainX+mainW/2)+'" y2="'+(incTop)+'" stroke="#6A5F52" stroke-width="1.5" marker-end="url(#ah)"/>');
+    bands.push(bandLabel(armX-30,topPad,oaB-topPad,"Other methods","#8a6db0"));
+    totalW=armEx+armExW+18;
+    totalH=Math.max(totalH,oaB+24);
+    // append other-arm included count note into included box already? keep separate; add tiny note
+    parts.push('<text x="'+(mainX)+'" y="'+(incBottom+16)+'" font-family="Hanken Grotesk,sans-serif" font-size="11.5" fill="#7C7062">+ '+o_inc+' included via other methods</text>');
+    totalH=Math.max(totalH,incBottom+30);
+  }
+
+  var titleSvg= $("title").value.trim()? '<text x="'+(totalW/2)+'" y="34" font-family="Fraunces, serif" font-size="19" font-weight="600" text-anchor="middle" fill="#211C16">'+esc($("title").value.trim())+'</text>':"";
+
+  var svg='<svg xmlns="'+SVGNS+'" viewBox="0 0 '+totalW+' '+totalH+'" width="'+totalW+'" height="'+totalH+'" font-family="Hanken Grotesk, sans-serif">'+
+    '<defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#6A5F52"/></marker></defs>'+
+    '<rect x="0" y="0" width="'+totalW+'" height="'+totalH+'" fill="#FFFFFF"/>'+
+    titleSvg+ bands.join("")+ parts.join("")+ '</svg>';
+  return {svg:svg,warn:warn,w:totalW,h:totalH};
+}
+
+function render(){
+  var out=buildSVG(false);
+  $("stage").innerHTML=out.svg;
+  $("warn").textContent=out.warn.length? ("⚠ Check inputs: "+out.warn.join("; ")) : "";
+}
+document.querySelectorAll("#form input").forEach(function(el){el.addEventListener("input",render);});
+render();
+
+/* ---------- downloads ---------- */
+function currentSVGString(){return buildSVG(false).svg;}
+$("dlSvg").onclick=function(){
+  var blob=new Blob([currentSVGString()],{type:"image/svg+xml"});
+  var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="prisma-flow.svg"; a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1500);
+};
+$("dlPng").onclick=function(){
+  var out=buildSVG(false);
+  var scale=2;
+  var img=new Image();
+  var svg64="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(out.svg);
+  img.onload=function(){
+    var c=document.createElement("canvas"); c.width=out.w*scale; c.height=out.h*scale;
+    var ctx=c.getContext("2d"); ctx.scale(scale,scale); ctx.drawImage(img,0,0);
+    c.toBlob(function(b){
+      var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="prisma-flow.png"; a.click();
+      setTimeout(function(){URL.revokeObjectURL(a.href);},1500);
+    });
+  };
+  img.onerror=function(){alert("PNG export failed in this browser; the SVG download always works.");};
+  img.src=svg64;
+};
+</script>
+</body>
+</html>

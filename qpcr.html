@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>qPCR / RT-qPCR analysis — ΔΔCt and primer efficiency</title>
+<meta name="description" content="Free, offline qPCR analysis: relative gene expression by the 2^-ddCt and Pfaffl methods with replicates and fold change, plus primer efficiency from a standard curve (slope, efficiency, R2). Runs in your browser.">
+<meta name="author" content="Mafatlal M. Kher">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
+    --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
+    --blue:#1A6BA6;--blue-deep:#124E7A;--blue-bg:#E2EFF7;--blue-line:#A9CBE3;
+    --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 8% -5%,rgba(26,107,166,.06),transparent 40%);}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 22px;border-bottom:1px solid var(--rule);margin-bottom:24px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:72ch;margin:0}
+  .tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+  .tab{font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 15px;border:1px solid var(--rule-strong);border-radius:999px;background:#fff;color:var(--ink-soft);cursor:pointer}
+  .tab.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .panel{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
+  .panel h2{font-family:"Fraunces",serif;font-size:19px;font-weight:600;margin:0 0 4px}
+  .panel .sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 16px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:6px 8px;border-bottom:1px solid var(--rule-strong)}
+  td{padding:5px 6px;border-bottom:1px dashed var(--rule)}
+  td input,td select{width:100%;border:1px solid var(--rule-strong);border-radius:7px;padding:7px 8px;font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper)}
+  td select{font-family:inherit}
+  td input:focus,td select:focus{outline:none;border-color:var(--go)}
+  td.del{width:30px;text-align:center}
+  .delbtn{border:none;background:none;color:var(--danger);font-size:17px;cursor:pointer}
+  .mini{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--go-deep);background:#fff;border:1px solid var(--rule-strong);border-radius:8px;padding:7px 12px;cursor:pointer;margin-top:12px}
+  .mini:hover{border-color:var(--go)}
+  .effrow{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px dashed var(--rule-strong)}
+  .field{display:flex;flex-direction:column;gap:5px}
+  label.fl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+  .field input,.field select{border:1px solid var(--rule-strong);border-radius:8px;padding:8px 10px;font-family:"JetBrains Mono",monospace;font-size:13.5px;background:var(--paper)}
+  .field select{font-family:inherit}
+  .results{margin-top:18px}
+  .resTable td{font-family:"JetBrains Mono",monospace}
+  .resTable .fold{font-weight:700;color:var(--blue-deep)}
+  .verdict{margin-top:16px;border-radius:11px;padding:13px 16px;font-size:13.5px;line-height:1.5}
+  .verdict.good{background:#E4F0E9;border:1px solid #B9D9C7;color:var(--go-deep)}
+  .verdict.warn{background:#FBEEE1;border:1px solid #E8C9A8;color:#9C4D12}
+  .big{font-family:"Fraunces",serif;font-size:26px;font-weight:600;color:var(--blue-deep)}
+  .curveGrid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+  @media(max-width:780px){.curveGrid{grid-template-columns:1fr}}
+  .plot{background:#FCFAF6;border:1px solid var(--rule-strong);border-radius:11px;padding:10px}
+  .metrics{display:flex;flex-direction:column;gap:10px}
+  .metric{background:var(--paper);border:1px solid var(--rule);border-radius:11px;padding:11px 15px}
+  .metric .num{font-family:"Fraunces",serif;font-size:22px;font-weight:600;color:var(--blue-deep)}
+  .metric .lbl{font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+  .hidden{display:none}
+  .note{font-size:12.5px;color:var(--ink-faint);margin-top:14px;line-height:1.55}
+  footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
+  footer.foot a{color:var(--go-deep)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">At the bench</div>
+    <h1>qPCR / RT-qPCR analysis</h1>
+    <p class="lede">Two calculations that come up in every gene-expression or diagnostics run: relative expression from cycle thresholds, and primer efficiency from a dilution series. Enter your Ct values; the maths runs on your device.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" data-t="ddct">Relative expression (ΔΔCt)</button>
+    <button class="tab" data-t="eff">Primer efficiency</button>
+  </div>
+
+  <!-- DDCT -->
+  <section class="panel" data-pane="ddct">
+    <h2>Relative expression</h2>
+    <p class="sub">One row per biological sample. Put technical replicate Ct values in a cell separated by spaces or commas; they are averaged. Choose which group is the calibrator (control).</p>
+    <table id="ddTable">
+      <thead><tr><th style="width:26%">Sample</th><th style="width:24%">Group</th><th>Target Ct</th><th>Reference Ct</th><th></th></tr></thead>
+      <tbody id="ddBody"></tbody>
+    </table>
+    <button class="mini" id="ddAdd">+ add sample</button>
+
+    <div class="effrow">
+      <div class="field"><label class="fl">Calibrator (control) group</label><select id="ddControl"></select></div>
+      <div class="field"><label class="fl">Target efficiency</label><select id="ddEt">
+        <option value="2">100% (2.0) — assume ideal</option><option value="1.9">90% (1.9)</option><option value="1.95">95% (1.95)</option><option value="2.05">105% (2.05)</option><option value="2.1">110% (2.1)</option></select></div>
+      <div class="field"><label class="fl">Reference efficiency</label><select id="ddEr">
+        <option value="2">100% (2.0) — assume ideal</option><option value="1.9">90% (1.9)</option><option value="1.95">95% (1.95)</option><option value="2.05">105% (2.05)</option><option value="2.1">110% (2.1)</option></select></div>
+    </div>
+
+    <div class="results" id="ddResults"></div>
+    <p class="note">Per sample, ΔCt = mean target Ct − mean reference Ct. ΔΔCt = group mean ΔCt − calibrator mean ΔCt. Fold change = 2^(−ΔΔCt) (Livak &amp; Schmittgen, 2001). The range comes from ±1 SD of the group's ΔCt. When efficiencies are not set to 100%, an efficiency-corrected ratio (Pfaffl, 2001) is also shown.</p>
+  </section>
+
+  <!-- EFFICIENCY -->
+  <section class="panel hidden" data-pane="eff">
+    <h2>Primer efficiency from a standard curve</h2>
+    <p class="sub">Enter the template amount for each point of your dilution series (any unit, e.g. ng, copies, or relative dilution like 1, 0.1, 0.01) and the mean Ct. At least three points.</p>
+    <div class="curveGrid">
+      <div>
+        <table id="effTable">
+          <thead><tr><th>Template amount</th><th>Mean Ct</th><th></th></tr></thead>
+          <tbody id="effBody"></tbody>
+        </table>
+        <button class="mini" id="effAdd">+ add point</button>
+      </div>
+      <div>
+        <div class="plot"><div id="plot"></div></div>
+        <div class="metrics" style="margin-top:12px">
+          <div class="metric"><div class="num" id="mEff">–</div><div class="lbl">Efficiency</div></div>
+          <div class="metric"><div class="num" id="mSlope">–</div><div class="lbl">Slope</div></div>
+          <div class="metric"><div class="num" id="mR2">–</div><div class="lbl">R²</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="verdict" id="effVerdict" style="margin-top:18px"></div>
+    <p class="note">Efficiency = 10^(−1/slope) − 1, from a linear fit of Ct against log₁₀(template amount). A slope of −3.32 corresponds to 100% efficiency (the amount doubles each cycle). Acceptable assays usually fall between −3.1 and −3.6 (90–110%) with R² ≥ 0.98.</p>
+  </section>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT). Methods: Livak &amp; Schmittgen, <i>Methods</i> 2001; Pfaffl, <i>Nucleic Acids Res</i> 2001. Calculations are standard but unvalidated for clinical use; confirm against your instrument's software for reportable results.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+document.querySelector(".tabs").addEventListener("click",function(e){
+  var t=e.target.closest(".tab"); if(!t)return;
+  document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+  var pane=t.getAttribute("data-t");
+  document.querySelectorAll("[data-pane]").forEach(function(p){p.classList.toggle("hidden",p.getAttribute("data-pane")!==pane);});
+});
+
+/* ---------- shared stats ---------- */
+function parseReps(s){ return String(s).split(/[\s,;]+/).map(parseFloat).filter(function(x){return !isNaN(x);}); }
+function mean(a){ return a.length? a.reduce(function(x,y){return x+y;},0)/a.length : NaN; }
+function sd(a){ if(a.length<2)return 0; var m=mean(a); return Math.sqrt(a.reduce(function(x,y){return x+(y-m)*(y-m);},0)/(a.length-1)); }
+
+/* ---------- ddCt ---------- */
+var ddRows=[
+  {s:"Ctrl 1",g:"Control",t:"24.1 24.3",r:"18.0 18.1"},
+  {s:"Ctrl 2",g:"Control",t:"24.5 24.4",r:"18.2 18.0"},
+  {s:"Ctrl 3",g:"Control",t:"24.2 24.0",r:"18.1 18.3"},
+  {s:"Treated 1",g:"Treated",t:"21.0 21.2",r:"18.1 18.0"},
+  {s:"Treated 2",g:"Treated",t:"21.4 21.3",r:"18.0 18.2"},
+  {s:"Treated 3",g:"Treated",t:"20.8 21.1",r:"18.2 18.1"}
+];
+function ddRender(){
+  var b=$("ddBody"); b.innerHTML="";
+  ddRows.forEach(function(r,i){
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td><input data-k="s" value="'+esc(r.s)+'"></td>'+
+      '<td><input data-k="g" value="'+esc(r.g)+'"></td>'+
+      '<td><input data-k="t" value="'+esc(r.t)+'"></td>'+
+      '<td><input data-k="r" value="'+esc(r.r)+'"></td>'+
+      '<td class="del"><button class="delbtn" data-i="'+i+'">&times;</button></td>';
+    tr.querySelectorAll("input").forEach(function(inp){
+      inp.addEventListener("input",function(){ r[inp.getAttribute("data-k")]=inp.value; ddCompute(); });
+    });
+    tr.querySelector(".delbtn").addEventListener("click",function(){ ddRows.splice(i,1); ddRender(); ddCompute(); });
+    b.appendChild(tr);
+  });
+}
+$("ddAdd").onclick=function(){ ddRows.push({s:"Sample",g:"Treated",t:"",r:""}); ddRender(); ddCompute(); };
+
+function ddCompute(){
+  // group → per-sample dCt and ct means
+  var groups={};
+  ddRows.forEach(function(r){
+    var t=parseReps(r.t), rf=parseReps(r.r);
+    if(!t.length||!rf.length)return;
+    var tm=mean(t), rm=mean(rf), d=tm-rm;
+    var key=(r.g||"(none)").trim();
+    (groups[key]=groups[key]||{dct:[],tct:[],rct:[]});
+    groups[key].dct.push(d); groups[key].tct.push(tm); groups[key].rct.push(rm);
+  });
+  var names=Object.keys(groups);
+  // populate control select
+  var sel=$("ddControl"), prev=sel.value;
+  sel.innerHTML=names.map(function(n){return '<option>'+esc(n)+'</option>';}).join("");
+  if(names.indexOf(prev)>=0)sel.value=prev;
+  var control=sel.value||names[0];
+  if(!control||!groups[control]){ $("ddResults").innerHTML='<p class="note">Enter at least one group with Ct values.</p>'; return; }
+  var Et=parseFloat($("ddEt").value)||2, Er=parseFloat($("ddEr").value)||2;
+  var usePfaffl=(Et!==2||Er!==2);
+  var cg=groups[control];
+  var cMeanD=mean(cg.dct), cMeanT=mean(cg.tct), cMeanR=mean(cg.rct);
+  var html='<table class="resTable"><thead><tr><th>Group</th><th>n</th><th>ΔCt ± SD</th><th>ΔΔCt</th><th>Fold (2^−ΔΔCt)</th><th>range</th>'+(usePfaffl?'<th>Pfaffl ratio</th>':'')+'</tr></thead><tbody>';
+  names.forEach(function(n){
+    var gp=groups[n], md=mean(gp.dct), s=sd(gp.dct), nn=gp.dct.length;
+    var ddct=md-cMeanD, fold=Math.pow(2,-ddct);
+    var lo=Math.pow(2,-(ddct+s)), hi=Math.pow(2,-(ddct-s));
+    var pf="";
+    if(usePfaffl){ var ratio=Math.pow(Et,(cMeanT-mean(gp.tct)))/Math.pow(Er,(cMeanR-mean(gp.rct))); pf='<td>'+fnum(ratio)+'</td>'; }
+    var isC=(n===control);
+    html+='<tr><td>'+esc(n)+(isC?' <span style="color:var(--ink-faint)">(calibrator)</span>':'')+'</td><td>'+nn+'</td><td>'+md.toFixed(2)+' ± '+s.toFixed(2)+'</td><td>'+ddct.toFixed(2)+'</td><td class="fold">'+fnum(fold)+'</td><td>'+fnum(lo)+'–'+fnum(hi)+'</td>'+pf+'</tr>';
+  });
+  html+='</tbody></table>';
+  $("ddResults").innerHTML=html;
+}
+function fnum(x){ if(!isFinite(x))return "–"; if(x>=100)return Math.round(x).toString(); if(x>=10)return x.toFixed(1); if(x>=1)return x.toFixed(2); if(x>=0.01)return x.toFixed(3); return x.toExponential(2); }
+["ddControl","ddEt","ddEr"].forEach(function(id){$(id).addEventListener("change",ddCompute);});
+
+/* ---------- efficiency ---------- */
+var effRows=[{q:"100",ct:"20.1"},{q:"10",ct:"23.4"},{q:"1",ct:"26.7"},{q:"0.1",ct:"30.0"},{q:"0.01",ct:"33.4"}];
+function effRender(){
+  var b=$("effBody"); b.innerHTML="";
+  effRows.forEach(function(r,i){
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td><input data-k="q" value="'+esc(r.q)+'"></td><td><input data-k="ct" value="'+esc(r.ct)+'"></td><td class="del"><button class="delbtn">&times;</button></td>';
+    tr.querySelectorAll("input").forEach(function(inp){ inp.addEventListener("input",function(){ r[inp.getAttribute("data-k")]=inp.value; effCompute(); }); });
+    tr.querySelector(".delbtn").addEventListener("click",function(){ effRows.splice(i,1); effRender(); effCompute(); });
+    b.appendChild(tr);
+  });
+}
+$("effAdd").onclick=function(){ effRows.push({q:"",ct:""}); effRender(); effCompute(); };
+
+function linfit(pts){
+  var n=pts.length,sx=0,sy=0,sxx=0,sxy=0,syy=0;
+  pts.forEach(function(p){sx+=p.x;sy+=p.y;sxx+=p.x*p.x;sxy+=p.x*p.y;syy+=p.y*p.y;});
+  var d=n*sxx-sx*sx; if(d===0)return null;
+  var slope=(n*sxy-sx*sy)/d, intercept=(sy-slope*sx)/n;
+  var r=(n*sxy-sx*sy)/Math.sqrt((n*sxx-sx*sx)*(n*syy-sy*sy));
+  return {slope:slope,intercept:intercept,r2:r*r,n:n};
+}
+function effCompute(){
+  var pts=[];
+  effRows.forEach(function(r){ var q=parseFloat(r.q),ct=parseFloat(r.ct); if(q>0&&!isNaN(ct))pts.push({x:Math.log(q)/Math.LN10,y:ct,q:q}); });
+  if(pts.length<2){ $("mEff").textContent="–";$("mSlope").textContent="–";$("mR2").textContent="–";$("effVerdict").className="verdict";$("effVerdict").textContent="Enter at least three dilution points.";drawPlot(pts,null);return; }
+  var fit=linfit(pts);
+  if(!fit){ return; }
+  var amp=Math.pow(10,-1/fit.slope), eff=(amp-1)*100;
+  $("mSlope").textContent=fit.slope.toFixed(3);
+  $("mR2").textContent=fit.r2.toFixed(4);
+  $("mEff").textContent=isFinite(eff)?eff.toFixed(1)+"%":"–";
+  var v=$("effVerdict");
+  var okSlope=fit.slope<=-3.1&&fit.slope>=-3.6, okR2=fit.r2>=0.98;
+  if(okSlope&&okR2){ v.className="verdict good"; v.innerHTML="<b>Good assay.</b> Efficiency "+eff.toFixed(1)+"% (slope "+fit.slope.toFixed(2)+", amplification ×"+amp.toFixed(2)+" per cycle), R² "+fit.r2.toFixed(3)+". Within the usual acceptance window."; }
+  else { v.className="verdict warn"; var msgs=[]; if(!okSlope)msgs.push("slope "+fit.slope.toFixed(2)+" is outside −3.1 to −3.6 (efficiency "+eff.toFixed(0)+"%)"); if(!okR2)msgs.push("R² "+fit.r2.toFixed(3)+" is below 0.98"); v.innerHTML="<b>Check the assay.</b> "+msgs.join("; ")+". Consider re-optimising primers, the dilution series, or pipetting."; }
+  drawPlot(pts,fit);
+}
+function drawPlot(pts,fit){
+  var W=300,H=210,m={l:38,r:10,t:12,b:30};
+  if(!pts.length){ $("plot").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="100%"></svg>'; return; }
+  var xs=pts.map(function(p){return p.x;}),ys=pts.map(function(p){return p.y;});
+  var x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs),y0=Math.min.apply(null,ys),y1=Math.max.apply(null,ys);
+  if(x0===x1){x0-=1;x1+=1;} if(y0===y1){y0-=1;y1+=1;}
+  var padY=(y1-y0)*0.12||1; y0-=padY;y1+=padY;
+  function sx(x){return m.l+(x-x0)/(x1-x0)*(W-m.l-m.r);}
+  function sy(y){return m.t+(1-(y-y0)/(y1-y0))*(H-m.t-m.b);}
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" font-family="JetBrains Mono, monospace" font-size="9">';
+  s+='<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="#FCFAF6"/>';
+  s+='<line x1="'+m.l+'" y1="'+(H-m.b)+'" x2="'+(W-m.r)+'" y2="'+(H-m.b)+'" stroke="#D8CCB8"/>';
+  s+='<line x1="'+m.l+'" y1="'+m.t+'" x2="'+m.l+'" y2="'+(H-m.b)+'" stroke="#D8CCB8"/>';
+  s+='<text x="'+((m.l+W-m.r)/2)+'" y="'+(H-6)+'" text-anchor="middle" fill="#7C7062">log₁₀(amount)</text>';
+  s+='<text x="11" y="'+((m.t+H-m.b)/2)+'" text-anchor="middle" fill="#7C7062" transform="rotate(-90 11 '+((m.t+H-m.b)/2)+')">Ct</text>';
+  if(fit){ var lx0=x0,lx1=x1; s+='<line x1="'+sx(lx0)+'" y1="'+sy(fit.slope*lx0+fit.intercept)+'" x2="'+sx(lx1)+'" y2="'+sy(fit.slope*lx1+fit.intercept)+'" stroke="#1A6BA6" stroke-width="1.6"/>'; }
+  pts.forEach(function(p){ s+='<circle cx="'+sx(p.x)+'" cy="'+sy(p.y)+'" r="3.4" fill="#124E7A"/>'; });
+  s+='</svg>';
+  $("plot").innerHTML=s;
+}
+
+/* init */
+ddRender(); ddCompute(); effRender(); effCompute();
+</script>
+</body>
+</html>

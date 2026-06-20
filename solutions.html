@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solution &amp; dilution calculator</title>
+<meta name="description" content="Free, offline lab calculator: C1V1=C2V2 dilutions, molarity from mass, percent solutions, and serial-dilution planning. Unit-aware. Runs entirely in your browser.">
+<meta name="author" content="Mafatlal M. Kher">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
+    --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
+    --amber:#C2611A;--amber-deep:#9C4D12;--amber-bg:#FBEEE1;--amber-line:#E8C9A8;
+    --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 8% -5%,rgba(194,97,26,.06),transparent 40%);}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 22px;border-bottom:1px solid var(--rule);margin-bottom:24px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:70ch;margin:0}
+  .tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+  .tab{font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 15px;border:1px solid var(--rule-strong);border-radius:999px;background:#fff;color:var(--ink-soft);cursor:pointer}
+  .tab.on{background:var(--amber-deep);color:#fff;border-color:var(--amber-deep)}
+  .panel{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
+  .panel h2{font-family:"Fraunces",serif;font-size:19px;font-weight:600;margin:0 0 4px}
+  .panel .sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 18px}
+  .qrow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  label.fl{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+  input[type=number],input[type=text],select{border:1px solid var(--rule-strong);border-radius:8px;padding:9px 10px;font-family:"JetBrains Mono",monospace;font-size:14px;background:var(--paper);color:var(--ink)}
+  select{font-family:inherit}
+  input:focus,select:focus{outline:none;border-color:var(--go)}
+  .num{width:120px} .unit{width:80px}
+  .eq{font-family:"Fraunces",serif;font-size:22px;color:var(--ink-faint);padding:0 2px 8px}
+  .blankhint{font-size:12.5px;color:var(--ink-faint);margin:2px 0 14px}
+  .result{margin-top:6px;background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:11px;padding:15px 18px}
+  .result .big{font-family:"Fraunces",serif;font-size:25px;font-weight:600;color:var(--amber-deep)}
+  .result .sub2{font-size:13.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
+  .mini{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--go-deep);background:#fff;border:1px solid var(--rule-strong);border-radius:8px;padding:7px 12px;cursor:pointer}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:7px 8px;border-bottom:1px solid var(--rule-strong)}
+  td{padding:7px 8px;border-bottom:1px dashed var(--rule);font-family:"JetBrains Mono",monospace}
+  .hidden{display:none}
+  .note{font-size:12.5px;color:var(--ink-faint);margin-top:14px;line-height:1.55}
+  footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
+  footer.foot a{color:var(--go-deep)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">At the bench</div>
+    <h1>Solution &amp; dilution calculator</h1>
+    <p class="lede">The four conversions that turn up whenever you make a buffer or a working stock. Pick a tab, type what you know, and leave the unknown blank.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" data-t="dil">Dilution (C₁V₁=C₂V₂)</button>
+    <button class="tab" data-t="mol">Molarity ↔ mass</button>
+    <button class="tab" data-t="pct">Percent solution</button>
+    <button class="tab" data-t="ser">Serial dilution</button>
+  </div>
+
+  <!-- DILUTION -->
+  <section class="panel" data-pane="dil">
+    <h2>Dilute a stock</h2>
+    <p class="sub">Leave exactly one box empty and it is solved from the other three.</p>
+    <div class="qrow">
+      <div class="field"><label class="fl">C₁ — stock conc.</label><input class="num" type="number" id="d_c1" step="any" value="10"></div>
+      <select class="unit" id="d_c1u"></select>
+      <div class="eq">×</div>
+      <div class="field"><label class="fl">V₁ — stock vol.</label><input class="num" type="number" id="d_v1" step="any" value=""></div>
+      <select class="unit" id="d_v1u"></select>
+    </div>
+    <div class="qrow">
+      <div class="field"><label class="fl">C₂ — final conc.</label><input class="num" type="number" id="d_c2" step="any" value="1"></div>
+      <select class="unit" id="d_c2u"></select>
+      <div class="eq">×</div>
+      <div class="field"><label class="fl">V₂ — final vol.</label><input class="num" type="number" id="d_v2" step="any" value="50"></div>
+      <select class="unit" id="d_v2u"></select>
+    </div>
+    <div class="blankhint" id="d_hint"></div>
+    <div class="result"><div class="big" id="d_out">–</div><div class="sub2" id="d_recipe"></div></div>
+    <p class="note">Concentration units must be compatible (all molar, or all the same mass/volume). The recipe assumes you add diluent to the stock to reach the final volume.</p>
+  </section>
+
+  <!-- MOLARITY -->
+  <section class="panel hidden" data-pane="mol">
+    <h2>Molarity, mass &amp; volume</h2>
+    <p class="sub">Enter the molecular weight, then leave one of concentration / volume / mass blank.</p>
+    <div class="qrow">
+      <div class="field"><label class="fl">Molecular weight (g/mol)</label><input class="num" type="number" id="m_mw" step="any" value="58.44"></div>
+      <button class="mini" id="m_nacl" title="load NaCl">NaCl</button>
+    </div>
+    <div class="qrow">
+      <div class="field"><label class="fl">Concentration</label><input class="num" type="number" id="m_c" step="any" value="1"></div>
+      <select class="unit" id="m_cu"></select>
+      <div class="field"><label class="fl">Final volume</label><input class="num" type="number" id="m_v" step="any" value="100"></div>
+      <select class="unit" id="m_vu"></select>
+      <div class="field"><label class="fl">Mass</label><input class="num" type="number" id="m_m" step="any" value=""></div>
+      <select class="unit" id="m_mu"></select>
+    </div>
+    <div class="result"><div class="big" id="m_out">–</div><div class="sub2" id="m_detail"></div></div>
+    <p class="note">mass = concentration × volume × molecular weight. Leave concentration, volume, or mass blank to solve for it.</p>
+  </section>
+
+  <!-- PERCENT -->
+  <section class="panel hidden" data-pane="pct">
+    <h2>Percent solution</h2>
+    <p class="sub">How much solute for a target percentage and final volume.</p>
+    <div class="qrow">
+      <div class="field"><label class="fl">Type</label><select id="p_type" style="width:150px">
+        <option value="wv">% w/v (g per 100 mL)</option>
+        <option value="vv">% v/v (mL per 100 mL)</option>
+        <option value="ww">% w/w (g per 100 g)</option>
+      </select></div>
+      <div class="field"><label class="fl">Target %</label><input class="num" type="number" id="p_pct" step="any" value="0.8"></div>
+      <div class="field"><label class="fl">Final volume</label><input class="num" type="number" id="p_v" step="any" value="500"></div>
+      <select class="unit" id="p_vu"></select>
+      <div class="field" id="p_densWrap"><label class="fl">Density (g/mL)</label><input class="num" type="number" id="p_dens" step="any" value="1.0"></div>
+    </div>
+    <div class="result"><div class="big" id="p_out">–</div><div class="sub2" id="p_detail"></div></div>
+    <p class="note">w/v expresses grams of solute per 100 mL of solution; v/v is mL per 100 mL; w/w is grams per 100 g (density converts the final volume to mass).</p>
+  </section>
+
+  <!-- SERIAL -->
+  <section class="panel hidden" data-pane="ser">
+    <h2>Serial dilution planner</h2>
+    <p class="sub">Lay out a dilution series with equal volume in each tube.</p>
+    <div class="qrow">
+      <div class="field"><label class="fl">Starting conc.</label><input class="num" type="number" id="s_c0" step="any" value="100"></div>
+      <select class="unit" id="s_c0u"></select>
+      <div class="field"><label class="fl">Fold per step</label><input class="num" type="number" id="s_fold" step="any" value="10"></div>
+      <div class="field"><label class="fl">Number of steps</label><input class="num" type="number" id="s_steps" value="5"></div>
+      <div class="field"><label class="fl">Volume per tube</label><input class="num" type="number" id="s_vol" step="any" value="1000"></div>
+      <select class="unit" id="s_volu"></select>
+    </div>
+    <div id="s_table"></div>
+    <p class="note">Each tube is brought to the same total volume. Transfer the shown volume from the previous tube into fresh diluent, mix, then carry forward. Prepare a little extra in the first tube to cover the transfers.</p>
+  </section>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT). All calculations run locally. Double-check critical recipes; rounding is for display only.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var CONC={M:1,"mM":1e-3,"µM":1e-6,"nM":1e-9}, VOL={L:1,"mL":1e-3,"µL":1e-6}, MASS={g:1,"mg":1e-3,"µg":1e-6,"ng":1e-9};
+function fillUnits(sel,map,def){ sel.innerHTML=Object.keys(map).map(function(u){return '<option'+(u===def?' selected':'')+'>'+u+'</option>';}).join(""); }
+["d_c1u","d_c2u"].forEach(function(id){fillUnits($(id),CONC,"mM");});
+fillUnits($("d_c1u"),CONC,"mM"); fillUnits($("d_c2u"),CONC,"mM");
+["d_v1u","d_v2u"].forEach(function(id){fillUnits($(id),VOL,"mL");});
+fillUnits($("m_cu"),CONC,"M"); fillUnits($("m_vu"),VOL,"mL"); fillUnits($("m_mu"),MASS,"g");
+fillUnits($("p_vu"),VOL,"mL"); fillUnits($("s_c0u"),CONC,"µM"); fillUnits($("s_volu"),VOL,"µL");
+
+document.querySelector(".tabs").addEventListener("click",function(e){
+  var t=e.target.closest(".tab"); if(!t)return;
+  document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+  var pane=t.getAttribute("data-t");
+  document.querySelectorAll("[data-pane]").forEach(function(p){p.classList.toggle("hidden",p.getAttribute("data-pane")!==pane);});
+});
+
+function val(id){ var v=$(id).value.trim(); return v===""?null:parseFloat(v); }
+function fmt(x){ if(!isFinite(x))return "–"; var a=Math.abs(x); if(a===0)return "0"; if(a<0.001||a>=1e6)return x.toExponential(3); if(a<1)return parseFloat(x.toPrecision(4)).toString(); return parseFloat(x.toFixed(3)).toString(); }
+
+/* ---------- dilution ---------- */
+function dil(){
+  var c1=val("d_c1"),v1=val("d_v1"),c2=val("d_c2"),v2=val("d_v2");
+  var c1u=CONC[$("d_c1u").value],c2u=CONC[$("d_c2u").value],v1u=VOL[$("d_v1u").value],v2u=VOL[$("d_v2u").value];
+  var C1=c1==null?null:c1*c1u, C2=c2==null?null:c2*c2u, V1=v1==null?null:v1*v1u, V2=v2==null?null:v2*v2u;
+  var blanks=[c1,v1,c2,v2].filter(function(x){return x==null;}).length;
+  if(blanks!==1){ $("d_hint").textContent="Leave exactly one box empty ("+blanks+" empty now)."; $("d_out").textContent="–"; $("d_recipe").textContent=""; return; }
+  $("d_hint").textContent="";
+  var out="",label="";
+  if(c1==null){ C1=C2*V2/V1; $("d_out").textContent="C₁ = "+fmt(C1/CONC[$("d_c1u").value])+" "+$("d_c1u").value; label="stock concentration"; }
+  else if(v1==null){ V1=C2*V2/C1; $("d_out").textContent="V₁ = "+fmt(V1/VOL[$("d_v1u").value])+" "+$("d_v1u").value; label="stock volume to take"; }
+  else if(c2==null){ C2=C1*V1/V2; $("d_out").textContent="C₂ = "+fmt(C2/CONC[$("d_c2u").value])+" "+$("d_c2u").value; label="final concentration"; }
+  else { V2=C1*V1/C2; $("d_out").textContent="V₂ = "+fmt(V2/VOL[$("d_v2u").value])+" "+$("d_v2u").value; label="final volume"; }
+  // recipe if both volumes known
+  if(V1!=null&&V2!=null&&isFinite(V1)&&isFinite(V2)){
+    var dilv=V2-V1; var vu=$("d_v2u").value, vuf=VOL[vu];
+    $("d_recipe").textContent="Take "+fmt(V1/VOL[$("d_v1u").value])+" "+$("d_v1u").value+" of stock, add "+fmt(dilv/vuf)+" "+vu+" diluent to reach "+fmt(V2/vuf)+" "+vu+". ("+label+")";
+  } else $("d_recipe").textContent=label;
+}
+["d_c1","d_v1","d_c2","d_v2","d_c1u","d_v1u","d_c2u","d_v2u"].forEach(function(id){$(id).addEventListener("input",dil);});
+
+/* ---------- molarity ---------- */
+function mol(){
+  var mw=val("m_mw"); if(!mw){ $("m_out").textContent="Enter a molecular weight."; $("m_detail").textContent=""; return; }
+  var c=val("m_c"),v=val("m_v"),m=val("m_m");
+  var C=c==null?null:c*CONC[$("m_cu").value], V=v==null?null:v*VOL[$("m_vu").value], M=m==null?null:m*MASS[$("m_mu").value];
+  var blanks=[c,v,m].filter(function(x){return x==null;}).length;
+  if(blanks!==1){ $("m_out").textContent="–"; $("m_detail").textContent="Leave one of concentration / volume / mass blank ("+blanks+" empty)."; return; }
+  if(m==null){ M=C*V*mw; $("m_out").textContent="Mass = "+fmt(M/MASS[$("m_mu").value])+" "+$("m_mu").value; }
+  else if(c==null){ C=M/(V*mw); $("m_out").textContent="Concentration = "+fmt(C/CONC[$("m_cu").value])+" "+$("m_cu").value; }
+  else { V=M/(C*mw); $("m_out").textContent="Volume = "+fmt(V/VOL[$("m_vu").value])+" "+$("m_vu").value; }
+  $("m_detail").textContent="mass = C × V × MW = "+fmt(C)+" mol·L⁻¹ × "+fmt(V)+" L × "+fmt(mw)+" g·mol⁻¹.";
+}
+["m_mw","m_c","m_v","m_m","m_cu","m_vu","m_mu"].forEach(function(id){$(id).addEventListener("input",mol);});
+$("m_nacl").onclick=function(){ $("m_mw").value="58.44"; mol(); };
+
+/* ---------- percent ---------- */
+function pct(){
+  var type=$("p_type").value, p=val("p_pct"), v=val("p_v"), vu=VOL[$("p_vu").value];
+  $("p_densWrap").style.display=(type==="ww")?"flex":"none";
+  if(p==null||v==null){ $("p_out").textContent="–"; $("p_detail").textContent=""; return; }
+  var vmL=v*vu/VOL["mL"]; // final volume in mL
+  if(type==="wv"){ var g=p/100*vmL; $("p_out").textContent=fmt(g)+" g solute"; $("p_detail").textContent="Dissolve "+fmt(g)+" g and make up to "+fmt(v)+" "+$("p_vu").value+"."; }
+  else if(type==="vv"){ var ml=p/100*vmL; $("p_out").textContent=fmt(ml)+" mL solute"; $("p_detail").textContent="Add "+fmt(ml)+" mL and make up to "+fmt(v)+" "+$("p_vu").value+" with solvent."; }
+  else { var dens=val("p_dens")||1; var massSol=vmL*dens; var g2=p/100*massSol; $("p_out").textContent=fmt(g2)+" g solute"; $("p_detail").textContent="Final solution ≈ "+fmt(massSol)+" g; "+fmt(p)+"% w/w needs "+fmt(g2)+" g solute (density "+dens+" g/mL)."; }
+}
+["p_type","p_pct","p_v","p_vu","p_dens"].forEach(function(id){$(id).addEventListener("input",pct);});
+
+/* ---------- serial ---------- */
+function serial(){
+  var c0=val("s_c0"),fold=val("s_fold"),steps=parseInt($("s_steps").value,10),vol=val("s_vol");
+  var cu=$("s_c0u").value, vu=$("s_volu").value;
+  if(!c0||!fold||fold<=1||!steps||steps<1||!vol){ $("s_table").innerHTML='<p class="note">Enter a starting concentration, a fold &gt; 1, steps, and a tube volume.</p>'; return; }
+  var transfer=vol/fold, diluent=vol-transfer;
+  var html='<table><thead><tr><th>Tube</th><th>Concentration</th><th>Transfer in</th><th>Diluent</th></tr></thead><tbody>';
+  html+='<tr><td>0 (stock)</td><td>'+fmt(c0)+' '+cu+'</td><td>—</td><td>—</td></tr>';
+  for(var i=1;i<=steps;i++){
+    var conc=c0/Math.pow(fold,i);
+    html+='<tr><td>'+i+'</td><td>'+fmt(conc)+' '+cu+'</td><td>'+fmt(transfer)+' '+vu+' (from tube '+(i-1)+')</td><td>'+fmt(diluent)+' '+vu+'</td></tr>';
+  }
+  html+='</tbody></table>';
+  $("s_table").innerHTML=html;
+}
+["s_c0","s_fold","s_steps","s_vol","s_c0u","s_volu"].forEach(function(id){$(id).addEventListener("input",serial);});
+
+/* init */
+dil(); mol(); pct(); serial();
+</script>
+</body>
+</html>

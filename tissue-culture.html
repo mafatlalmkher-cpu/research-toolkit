@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tissue-culture media calculator — PGR stocks, mg/L ↔ µM</title>
+<meta name="description" content="Free, offline plant tissue culture calculator: how much hormone stock to add to a medium, mg/L to µM conversion for common plant growth regulators (BA, IBA, NAA, TDZ, 2,4-D and more), stock preparation, and recipe scaling. Runs in your browser.">
+<meta name="author" content="Mafatlal M. Kher">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
+    --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
+    --green:#2A6F4E;--green-deep:#1E5439;--green-bg:#E4F0E9;--green-line:#B9D9C7;
+    --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 8% -5%,rgba(42,111,78,.06),transparent 40%);}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 22px;border-bottom:1px solid var(--rule);margin-bottom:24px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:72ch;margin:0}
+  .tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+  .tab{font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 15px;border:1px solid var(--rule-strong);border-radius:999px;background:#fff;color:var(--ink-soft);cursor:pointer}
+  .tab.on{background:var(--green-deep);color:#fff;border-color:var(--green-deep)}
+  .panel{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
+  .panel h2{font-family:"Fraunces",serif;font-size:19px;font-weight:600;margin:0 0 4px}
+  .panel .sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 18px}
+  .qrow{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  label.fl{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+  input[type=number],input[type=text],select{border:1px solid var(--rule-strong);border-radius:8px;padding:9px 10px;font-family:"JetBrains Mono",monospace;font-size:14px;background:var(--paper);color:var(--ink)}
+  select{font-family:inherit}
+  input:focus,select:focus{outline:none;border-color:var(--go)}
+  .num{width:118px}.unit{width:88px}
+  .pgr{min-width:230px}
+  .result{margin-top:6px;background:var(--green-bg);border:1px solid var(--green-line);border-radius:11px;padding:15px 18px}
+  .result .big{font-family:"Fraunces",serif;font-size:25px;font-weight:600;color:var(--green-deep)}
+  .result .sub2{font-size:13.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
+  .pgrinfo{font-size:12.5px;color:var(--ink-soft);margin-top:10px;background:var(--paper);border:1px dashed var(--rule-strong);border-radius:9px;padding:10px 13px;line-height:1.5}
+  .pgrinfo b{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:7px 8px;border-bottom:1px solid var(--rule-strong)}
+  td{padding:5px 7px;border-bottom:1px dashed var(--rule)}
+  td input{width:100%;border:1px solid var(--rule-strong);border-radius:7px;padding:7px 8px;font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper)}
+  td.out{font-family:"JetBrains Mono",monospace;color:var(--green-deep);font-weight:600}
+  td.del{width:30px;text-align:center}.delbtn{border:none;background:none;color:var(--danger);font-size:17px;cursor:pointer}
+  .mini{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--go-deep);background:#fff;border:1px solid var(--rule-strong);border-radius:8px;padding:7px 12px;cursor:pointer;margin-top:12px}
+  .hidden{display:none}
+  .note{font-size:12.5px;color:var(--ink-faint);margin-top:14px;line-height:1.55}
+  footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
+  footer.foot a{color:var(--go-deep)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">At the bench</div>
+    <h1>Tissue-culture media calculator</h1>
+    <p class="lede">Plant growth regulators are the fiddly part of making a medium. These tools convert between mg·L⁻¹ and µM, work out how much stock to pipette, and scale a recipe to any volume, using molecular weights for the regulators you actually use.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" data-t="add">Add stock to medium</button>
+    <button class="tab" data-t="conv">mg·L⁻¹ ↔ µM</button>
+    <button class="tab" data-t="stock">Make a stock</button>
+    <button class="tab" data-t="scale">Scale a recipe</button>
+  </div>
+
+  <!-- ADD STOCK -->
+  <section class="panel" data-pane="add">
+    <h2>How much stock to add</h2>
+    <p class="sub">Pick a regulator, the concentration you want in the medium, the batch volume, and your stock strength.</p>
+    <div class="qrow">
+      <div class="field"><label class="fl">Plant growth regulator</label><select class="pgr" id="a_pgr"></select></div>
+    </div>
+    <div class="qrow">
+      <div class="field"><label class="fl">Target in medium</label><input class="num" type="number" id="a_final" step="any" value="1.0"></div>
+      <select class="unit" id="a_finalu"><option>mg/L</option><option>µM</option></select>
+      <div class="field"><label class="fl">Medium volume</label><input class="num" type="number" id="a_vol" step="any" value="1"></div>
+      <select class="unit" id="a_volu"><option>L</option><option>mL</option></select>
+    </div>
+    <div class="qrow">
+      <div class="field"><label class="fl">Stock concentration</label><input class="num" type="number" id="a_stock" step="any" value="1"></div>
+      <select class="unit" id="a_stocku"><option>mg/mL</option><option>mM</option></select>
+    </div>
+    <div class="result"><div class="big" id="a_out">–</div><div class="sub2" id="a_detail"></div></div>
+    <div class="pgrinfo" id="a_info"></div>
+    <p class="note">Volume of stock = (target mg·L⁻¹ × medium L) ÷ stock mg·mL⁻¹. A 1 mg·mL⁻¹ stock is convenient: 1 mL gives 1 mg·L⁻¹ in 1 L of medium.</p>
+  </section>
+
+  <!-- CONVERT -->
+  <section class="panel hidden" data-pane="conv">
+    <h2>mg·L⁻¹ ↔ µM</h2>
+    <p class="sub">Concentration interconversion for one regulator. Edit either box.</p>
+    <div class="qrow">
+      <div class="field"><label class="fl">Regulator</label><select class="pgr" id="c_pgr"></select></div>
+      <div class="field"><label class="fl">mg·L⁻¹</label><input class="num" type="number" id="c_mgl" step="any" value="1.0"></div>
+      <div class="eq" style="padding-bottom:8px;color:var(--ink-faint)">↔</div>
+      <div class="field"><label class="fl">µM</label><input class="num" type="number" id="c_um" step="any" value=""></div>
+    </div>
+    <div class="pgrinfo" id="c_info"></div>
+    <p class="note">µM = mg·L⁻¹ × 1000 ÷ MW. mg·L⁻¹ = µM × MW ÷ 1000.</p>
+  </section>
+
+  <!-- MAKE STOCK -->
+  <section class="panel hidden" data-pane="stock">
+    <h2>Prepare a stock solution</h2>
+    <p class="sub">How much to weigh for a stock, and how to dissolve it.</p>
+    <div class="qrow">
+      <div class="field"><label class="fl">Regulator</label><select class="pgr" id="k_pgr"></select></div>
+      <div class="field"><label class="fl">Stock strength</label><input class="num" type="number" id="k_conc" step="any" value="1"></div>
+      <select class="unit" id="k_concu"><option>mg/mL</option><option>mM</option></select>
+      <div class="field"><label class="fl">Stock volume (mL)</label><input class="num" type="number" id="k_vol" step="any" value="10"></div>
+    </div>
+    <div class="result"><div class="big" id="k_out">–</div><div class="sub2" id="k_detail"></div></div>
+    <div class="pgrinfo" id="k_info"></div>
+    <p class="note">Weigh the shown mass, dissolve in the minimum volume of the indicated solvent, then make up to the stock volume with water. Store cold and dark; note which regulators are heat-labile and should be filter-sterilised rather than autoclaved.</p>
+  </section>
+
+  <!-- SCALE -->
+  <section class="panel hidden" data-pane="scale">
+    <h2>Scale a recipe</h2>
+    <p class="sub">Enter amounts per litre; the tool scales them to your batch volume.</p>
+    <div class="qrow">
+      <div class="field"><label class="fl">Batch volume (L)</label><input class="num" type="number" id="r_vol" step="any" value="2"></div>
+    </div>
+    <table id="r_table"><thead><tr><th style="width:42%">Component</th><th>Amount per L</th><th>Unit</th><th>For batch</th><th></th></tr></thead><tbody id="r_body"></tbody></table>
+    <button class="mini" id="r_add">+ add component</button>
+    <p class="note">Works for any per-litre quantity: salts (mg or g), sucrose (g), agar (g), or stock volumes (mL). Units are carried through unchanged.</p>
+  </section>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT). Molecular weights are standard values; always confirm against your reagent's certificate of analysis. Solvent and sterilisation notes are general guidance, not a substitute for the regulator's data sheet.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+/* name, MW (g/mol), class, solvent, autoclavable */
+var PGR=[
+  {n:"BA / BAP (6-benzylaminopurine)",mw:225.25,c:"cytokinin",s:"a few drops of 1 N NaOH (or HCl), then water",auto:true},
+  {n:"Kinetin",mw:215.21,c:"cytokinin",s:"a few drops of 1 N NaOH, then water",auto:true},
+  {n:"2iP (2-isopentenyladenine)",mw:203.29,c:"cytokinin",s:"1 N NaOH, then water",auto:true},
+  {n:"Zeatin",mw:219.24,c:"cytokinin",s:"a few drops of 1 N HCl or NaOH",auto:false},
+  {n:"TDZ (thidiazuron)",mw:220.25,c:"cytokinin-like",s:"DMSO or warm dilute NaOH",auto:false},
+  {n:"meta-Topolin",mw:255.27,c:"cytokinin",s:"1 N NaOH, then water",auto:true},
+  {n:"IAA (indole-3-acetic acid)",mw:175.18,c:"auxin",s:"a few drops of 1 N NaOH or ethanol",auto:false},
+  {n:"IBA (indole-3-butyric acid)",mw:203.24,c:"auxin",s:"a few drops of 1 N NaOH or ethanol",auto:true},
+  {n:"NAA (1-naphthaleneacetic acid)",mw:186.21,c:"auxin",s:"a few drops of 1 N NaOH or ethanol",auto:true},
+  {n:"2,4-D (2,4-dichlorophenoxyacetic acid)",mw:221.04,c:"auxin",s:"a few drops of 1 N NaOH or ethanol",auto:true},
+  {n:"Picloram",mw:241.46,c:"auxin",s:"1 N NaOH or DMSO",auto:true},
+  {n:"Dicamba",mw:221.04,c:"auxin",s:"1 N NaOH or ethanol",auto:true},
+  {n:"GA3 (gibberellic acid)",mw:346.37,c:"gibberellin",s:"ethanol or water (filter-sterilise)",auto:false},
+  {n:"ABA (abscisic acid)",mw:264.32,c:"inhibitor",s:"a few drops of 1 N NaOH or ethanol; keep dark",auto:false},
+  {n:"Adenine hemisulfate",mw:184.20,c:"purine supplement",s:"a few drops of 1 N HCl, then water",auto:true}
+];
+function fillPGR(sel){ sel.innerHTML=PGR.map(function(p,i){return '<option value="'+i+'">'+p.n+' — '+p.mw+'</option>';}).join(""); }
+["a_pgr","c_pgr","k_pgr"].forEach(function(id){fillPGR($(id));});
+
+document.querySelector(".tabs").addEventListener("click",function(e){
+  var t=e.target.closest(".tab"); if(!t)return;
+  document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+  var pane=t.getAttribute("data-t");
+  document.querySelectorAll("[data-pane]").forEach(function(p){p.classList.toggle("hidden",p.getAttribute("data-pane")!==pane);});
+});
+
+function val(id){var v=$(id).value.trim();return v===""?null:parseFloat(v);}
+function fmt(x){ if(!isFinite(x))return "–"; var a=Math.abs(x); if(a===0)return "0"; if(a<0.001||a>=1e6)return x.toExponential(3); if(a<1)return parseFloat(x.toPrecision(4)).toString(); return parseFloat(x.toFixed(3)).toString(); }
+function info(p){ return '<b>'+p.n.split(" — ")[0]+'</b> · MW '+p.mw+' g/mol · '+p.c+'. Dissolve in '+p.s+'. '+(p.auto?'Generally autoclavable.':'<b>Heat-labile — filter-sterilise</b> and add after autoclaving.'); }
+
+/* ---- add stock ---- */
+function addCalc(){
+  var p=PGR[+$("a_pgr").value]; $("a_info").innerHTML=info(p);
+  var fv=val("a_final"), vol=val("a_vol"), st=val("a_stock");
+  if(fv==null||vol==null||st==null||st<=0){ $("a_out").textContent="–"; $("a_detail").textContent="Fill in target, volume, and stock strength."; return; }
+  var finalMgL=($("a_finalu").value==="mg/L")? fv : fv*p.mw/1000;
+  var finalUM =($("a_finalu").value==="µM")? fv : finalMgL*1000/p.mw;
+  var volL=($("a_volu").value==="L")? vol : vol/1000;
+  var stockMgmL=($("a_stocku").value==="mg/mL")? st : st*p.mw/1000;
+  var mgNeeded=finalMgL*volL;
+  var volmL=mgNeeded/stockMgmL;
+  var disp= volmL<1? fmt(volmL*1000)+" µL" : fmt(volmL)+" mL";
+  $("a_out").textContent="Add "+disp+" of stock";
+  $("a_detail").textContent="Target "+fmt(finalMgL)+" mg·L⁻¹ ("+fmt(finalUM)+" µM) × "+fmt(volL)+" L = "+fmt(mgNeeded)+" mg, from a "+fmt(stockMgmL)+" mg·mL⁻¹ stock.";
+}
+["a_pgr","a_final","a_finalu","a_vol","a_volu","a_stock","a_stocku"].forEach(function(id){$(id).addEventListener("input",addCalc);$(id).addEventListener("change",addCalc);});
+
+/* ---- convert ---- */
+function convFrom(which){
+  var p=PGR[+$("c_pgr").value]; $("c_info").innerHTML=info(p);
+  if(which==="mgl"){ var mgl=val("c_mgl"); if(mgl==null){$("c_um").value="";return;} $("c_um").value=fmt(mgl*1000/p.mw); }
+  else if(which==="um"){ var um=val("c_um"); if(um==null){$("c_mgl").value="";return;} $("c_mgl").value=fmt(um*p.mw/1000); }
+  else { var m=val("c_mgl"); if(m!=null)$("c_um").value=fmt(m*1000/p.mw); }
+}
+$("c_mgl").addEventListener("input",function(){convFrom("mgl");});
+$("c_um").addEventListener("input",function(){convFrom("um");});
+$("c_pgr").addEventListener("change",function(){convFrom("mgl");});
+
+/* ---- make stock ---- */
+function stockCalc(){
+  var p=PGR[+$("k_pgr").value]; $("k_info").innerHTML=info(p);
+  var conc=val("k_conc"), vol=val("k_vol");
+  if(conc==null||vol==null){ $("k_out").textContent="–"; $("k_detail").textContent=""; return; }
+  var mgmL=($("k_concu").value==="mg/mL")? conc : conc*p.mw/1000;
+  var mass=mgmL*vol;
+  $("k_out").textContent="Weigh "+fmt(mass)+" mg";
+  var mM=mgmL*1000/p.mw;
+  $("k_detail").textContent="For "+fmt(vol)+" mL of "+fmt(mgmL)+" mg·mL⁻¹ ("+fmt(mM)+" mM) stock.";
+}
+["k_pgr","k_conc","k_concu","k_vol"].forEach(function(id){$(id).addEventListener("input",stockCalc);$(id).addEventListener("change",stockCalc);});
+
+/* ---- scale ---- */
+var rRows=[{n:"MS salts + vitamins",a:"4.4",u:"g"},{n:"Sucrose",a:"30",u:"g"},{n:"BA stock (1 mg/mL)",a:"1",u:"mL"},{n:"Agar",a:"7",u:"g"}];
+function rRender(){
+  var b=$("r_body"); b.innerHTML="";
+  rRows.forEach(function(r,i){
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td><input data-k="n" value="'+esc(r.n)+'"></td><td><input data-k="a" value="'+esc(r.a)+'"></td><td><input data-k="u" value="'+esc(r.u)+'" style="width:70px"></td><td class="out" data-out></td><td class="del"><button class="delbtn">&times;</button></td>';
+    tr.querySelectorAll("input").forEach(function(inp){ inp.addEventListener("input",function(){ r[inp.getAttribute("data-k")]=inp.value; rCalc(); }); });
+    tr.querySelector(".delbtn").addEventListener("click",function(){ rRows.splice(i,1); rRender(); rCalc(); });
+    b.appendChild(tr);
+  });
+  rCalc();
+}
+function rCalc(){
+  var vol=val("r_vol")||0;
+  var cells=$("r_body").querySelectorAll("[data-out]");
+  rRows.forEach(function(r,i){ var a=parseFloat(r.a); cells[i].textContent=isNaN(a)?"–":(fmt(a*vol)+" "+r.u); });
+}
+$("r_add").onclick=function(){ rRows.push({n:"",a:"",u:""}); rRender(); };
+$("r_vol").addEventListener("input",rCalc);
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+/* init */
+addCalc(); convFrom("mgl"); stockCalc(); rRender();
+</script>
+</body>
+</html>

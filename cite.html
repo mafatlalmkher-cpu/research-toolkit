@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reference formatter — DOI / PMID to citation</title>
+<meta name="description" content="Free, browser-based reference formatter. Paste DOIs or PubMed IDs and get APA, Vancouver, and Harvard citations plus BibTeX and RIS. Metadata from Crossref and PubMed. No login.">
+<meta name="author" content="Mafatlal M. Kher">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
+    --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
+    --blue:#1A6BA6;--blue-deep:#124E7A;--blue-bg:#E2EFF7;--blue-line:#A9CBE3;
+    --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 8% -5%,rgba(26,107,166,.06),transparent 38%),radial-gradient(circle at 95% 0%,rgba(22,105,92,.045),transparent 40%);}
+  a:focus-visible,button:focus-visible,textarea:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 24px;border-bottom:1px solid var(--rule);margin-bottom:26px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:72ch;margin:0}
+  .panel{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
+  .panel h2{font-family:"Fraunces",serif;font-size:19px;font-weight:600;margin:0 0 14px}
+  textarea{width:100%;min-height:120px;resize:vertical;border:1px solid var(--rule-strong);border-radius:11px;padding:13px 14px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink);background:var(--paper);line-height:1.6}
+  textarea:focus{outline:none;border-color:var(--go)}
+  .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+  button.primary{font-family:inherit;font-weight:600;font-size:14.5px;color:#fff;background:var(--go);border:none;border-radius:10px;padding:11px 20px;cursor:pointer;box-shadow:0 1px 2px rgba(15,76,66,.3);transition:transform .12s,background .14s;display:inline-flex;gap:7px}
+  button.primary:hover{background:var(--go-deep);transform:translateY(-1px)}
+  button.primary:disabled{opacity:.5;cursor:not-allowed}
+  button.ghost{font-family:inherit;font-weight:600;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--rule-strong);border-radius:10px;padding:10px 15px;cursor:pointer}
+  button.ghost:hover{border-color:var(--ink-faint)}
+  .status{margin-top:14px;font-size:13px}
+  .st{display:flex;gap:9px;align-items:center;padding:5px 0;border-top:1px dashed var(--rule-strong)}
+  .st:first-child{border-top:none}
+  .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .dot.ok{background:var(--go)} .dot.err{background:var(--danger)} .dot.wait{background:#C9A227}
+  .st code{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-soft)}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0}
+  .tab{font-family:inherit;font-size:13.5px;font-weight:600;padding:8px 14px;border:1px solid var(--rule-strong);border-bottom:none;border-radius:10px 10px 0 0;background:var(--paper);color:var(--ink-soft);cursor:pointer}
+  .tab.on{background:#fff;color:var(--blue-deep);border-color:var(--blue-line)}
+  .outwrap{border:1px solid var(--rule-strong);border-radius:0 11px 11px 11px;background:#fff;padding:16px}
+  .out{font-family:"Hanken Grotesk",sans-serif;font-size:14.5px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+  .out.code{font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:1.55;white-space:pre-wrap}
+  .ref{padding:7px 0;border-top:1px dashed var(--rule)}
+  .ref:first-child{border-top:none}
+  .copy{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--blue-deep);background:#fff;border:1px solid var(--blue-line);border-radius:8px;padding:7px 13px;cursor:pointer;margin-top:12px}
+  .copy.done{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .hidden{display:none}
+  .note{font-size:12.5px;color:var(--ink-faint);margin-top:10px;line-height:1.55}
+  footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
+  footer.foot a{color:var(--go-deep)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">Literature workflow</div>
+    <h1>Reference formatter</h1>
+    <p class="lede">Paste a list of DOIs or PubMed IDs, one per line. The tool looks each up in Crossref or PubMed and builds clean references in three common styles, plus BibTeX and RIS you can import into any reference manager. Lookups use free public services; nothing is stored.</p>
+  </header>
+
+  <div class="panel">
+    <h2>1 · Paste identifiers</h2>
+    <textarea id="ids" placeholder="10.1094/PDIS-01-19-0001&#10;10.1016/j.jviromet.2021.114000&#10;34567890   (a PubMed ID)"></textarea>
+    <div class="controls">
+      <button class="primary" id="go">Fetch &amp; format →</button>
+      <button class="ghost" id="demo">Load example</button>
+      <span class="note" id="prog"></span>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="panel hidden" id="results">
+    <h2>2 · Your references</h2>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-s="apa">APA 7</button>
+      <button class="tab" data-s="vanc">Vancouver</button>
+      <button class="tab" data-s="harv">Harvard</button>
+      <button class="tab" data-s="bibtex">BibTeX</button>
+      <button class="tab" data-s="ris">RIS</button>
+    </div>
+    <div class="outwrap">
+      <div class="out" id="out"></div>
+      <button class="copy" id="copy">Copy all</button>
+    </div>
+    <p class="note">Citation styles vary between journals and institutions; these follow common interpretations of APA 7th edition, the ICMJE/Vancouver numbered style, and Cite Them Right Harvard. Check punctuation and author limits against your target's exact requirements. Journal names are shown as supplied (full from Crossref, abbreviated from PubMed).</p>
+  </div>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT). Metadata © the respective publishers via <a href="https://www.crossref.org">Crossref</a> and <a href="https://pubmed.ncbi.nlm.nih.gov">PubMed</a>. This tool reformats public metadata and does not store anything.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var RECORDS=[], STYLE="apa";
+
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function clean(s){ return String(s==null?"":s).replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim(); }
+function stripDot(s){ return clean(s).replace(/\.+$/,""); }
+function initials(given,dots){
+  if(!given)return "";
+  var toks=String(given).split(/[\s.\-]+/).filter(Boolean);
+  return toks.map(function(t){ var c=t.charAt(0).toUpperCase(); return dots? c+".":c; }).join(dots?" ":"");
+}
+
+/* ---------- normalisers ---------- */
+function fromCrossref(m){
+  var auth=(m.author||[]).map(function(a){ return {family:clean(a.family||a.name||""), given:clean(a.given||"")}; })
+            .filter(function(a){return a.family||a.given;});
+  var year=""; var d=m.issued&&m.issued["date-parts"]&&m.issued["date-parts"][0]; if(d&&d[0])year=String(d[0]);
+  if(!year&&m.published&&m.published["date-parts"])year=String(m.published["date-parts"][0][0]||"");
+  return {
+    authors:auth, title:stripDot(Array.isArray(m.title)?m.title[0]:m.title),
+    journal:clean(Array.isArray(m["container-title"])?m["container-title"][0]:m["container-title"]),
+    year:year, volume:clean(m.volume||""), issue:clean(m.issue||""), pages:clean(m.page||""),
+    doi:clean(m.DOI||""), type:"article"
+  };
+}
+function fromPubmed(r){
+  var auth=(r.authors||[]).map(function(a){
+    var name=clean(a.name||""); var toks=name.split(/\s+/);
+    var last=toks[toks.length-1];
+    if(/^[A-Z]{1,4}$/.test(last)&&toks.length>1){ return {family:toks.slice(0,-1).join(" "), given:last}; }
+    return {family:name, given:""};
+  });
+  var doi=""; (r.articleids||[]).forEach(function(x){ if(x.idtype==="doi")doi=clean(x.value); });
+  return {
+    authors:auth, title:stripDot(r.title), journal:clean(r.source||r.fulljournalname||""),
+    year:getYear(r.pubdate), volume:clean(r.volume||""), issue:clean(r.issue||""), pages:clean(r.pages||""),
+    doi:doi, type:"article"
+  };
+}
+function getYear(s){ var m=String(s||"").match(/\b(1[5-9]\d\d|20\d\d|21\d\d)\b/); return m?m[1]:""; }
+
+/* ---------- style formatters ---------- */
+function apaAuthors(a){
+  if(!a.length)return "";
+  var fmt=a.map(function(x){ return stripDot(x.family)+(x.given?", "+initials(x.given,true):""); });
+  if(fmt.length===1)return fmt[0];
+  if(fmt.length<=20)return fmt.slice(0,-1).join(", ")+", & "+fmt[fmt.length-1];
+  return fmt.slice(0,19).join(", ")+", … "+fmt[fmt.length-1];
+}
+function vancAuthors(a){
+  if(!a.length)return "";
+  var fmt=a.map(function(x){ return stripDot(x.family)+" "+initials(x.given,false); });
+  if(fmt.length>6)return fmt.slice(0,6).join(", ")+", et al";
+  return fmt.join(", ");
+}
+function harvAuthors(a){
+  if(!a.length)return "";
+  var fmt=a.map(function(x){ return stripDot(x.family)+(x.given?", "+initials(x.given,true):""); });
+  if(fmt.length===1)return fmt[0];
+  if(fmt.length<=3)return fmt.slice(0,-1).join(", ")+" and "+fmt[fmt.length-1];
+  return fmt[0]+" et al.";
+}
+function doiURL(d){ return d?("https://doi.org/"+d):""; }
+
+function fmtAPA(r){
+  var s=apaAuthors(r.authors); if(s)s+=" ";
+  s+="("+(r.year||"n.d.")+"). "+ (r.title?r.title+". ":"");
+  if(r.journal){ s+=r.journal; if(r.volume){ s+=", "+r.volume; if(r.issue)s+="("+r.issue+")"; } if(r.pages)s+=", "+r.pages; s+="."; }
+  if(r.doi)s+=" "+doiURL(r.doi);
+  return s.trim();
+}
+function fmtVanc(r,n){
+  var s=(n?n+". ":""); var a=vancAuthors(r.authors); if(a)s+=a+". ";
+  if(r.title)s+=r.title+". ";
+  if(r.journal)s+=r.journal+". ";
+  s+=(r.year||""); if(r.volume){ s+=";"+r.volume; if(r.issue)s+="("+r.issue+")"; } if(r.pages)s+=":"+r.pages; s+=".";
+  if(r.doi)s+=" doi:"+r.doi;
+  return s.trim().replace(/\s+\./g,".");
+}
+function fmtHarv(r){
+  var s=harvAuthors(r.authors); if(s)s+=" ";
+  s+="("+(r.year||"n.d.")+") ";
+  if(r.title)s+="'"+r.title+"', ";
+  if(r.journal){ s+=r.journal; if(r.volume){ s+=", "+r.volume; if(r.issue)s+="("+r.issue+")"; } if(r.pages)s+=", pp. "+r.pages; s+="."; }
+  if(r.doi)s+=" doi: "+r.doi+".";
+  return s.trim();
+}
+function bibKey(r,i){ var a=(r.authors[0]&&r.authors[0].family||"ref").split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g,""); return (a||"ref")+(r.year||"")+(i+1); }
+function fmtBib(r,i){
+  var f=[];
+  if(r.title)f.push("  title = {"+r.title+"}");
+  if(r.authors.length)f.push("  author = {"+r.authors.map(function(x){return stripDot(x.family)+(x.given?", "+x.given:"");}).join(" and ")+"}");
+  if(r.year)f.push("  year = {"+r.year+"}");
+  if(r.journal)f.push("  journal = {"+r.journal+"}");
+  if(r.volume)f.push("  volume = {"+r.volume+"}");
+  if(r.issue)f.push("  number = {"+r.issue+"}");
+  if(r.pages)f.push("  pages = {"+r.pages+"}");
+  if(r.doi)f.push("  doi = {"+r.doi+"}");
+  return "@article{"+bibKey(r,i)+",\n"+f.join(",\n")+"\n}";
+}
+function fmtRIS(r){
+  var L=["TY  - JOUR"];
+  r.authors.forEach(function(x){ L.push("AU  - "+stripDot(x.family)+(x.given?", "+x.given:"")); });
+  if(r.title)L.push("TI  - "+r.title);
+  if(r.journal)L.push("JO  - "+r.journal);
+  if(r.year)L.push("PY  - "+r.year);
+  if(r.volume)L.push("VL  - "+r.volume);
+  if(r.issue)L.push("IS  - "+r.issue);
+  if(r.pages)L.push("SP  - "+r.pages);
+  if(r.doi)L.push("DO  - "+r.doi);
+  L.push("ER  - ");
+  return L.join("\n");
+}
+
+function renderOut(){
+  var html="", txt="";
+  if(STYLE==="apa"||STYLE==="harv"){
+    RECORDS.forEach(function(r){ var s=(STYLE==="apa")?fmtAPA(r):fmtHarv(r); html+='<div class="ref">'+esc(s)+'</div>'; txt+=s+"\n\n"; });
+    $("out").className="out";
+  } else if(STYLE==="vanc"){
+    RECORDS.forEach(function(r,i){ var s=fmtVanc(r,i+1); html+='<div class="ref">'+esc(s)+'</div>'; txt+=s+"\n"; });
+    $("out").className="out";
+  } else if(STYLE==="bibtex"){
+    RECORDS.forEach(function(r,i){ var s=fmtBib(r,i); txt+=s+"\n\n"; });
+    html=esc(txt.trim()); $("out").className="out code";
+  } else if(STYLE==="ris"){
+    RECORDS.forEach(function(r){ txt+=fmtRIS(r)+"\n\n"; });
+    html=esc(txt.trim()); $("out").className="out code";
+  }
+  $("out").innerHTML=html||'<span style="color:var(--ink-faint)">Nothing formatted yet.</span>';
+  $("out").setAttribute("data-text",txt.trim());
+}
+
+/* ---------- fetch ---------- */
+function classify(id){
+  id=id.trim().replace(/^https?:\/\/(dx\.)?doi\.org\//,"").replace(/^doi:\s*/i,"");
+  if(/^10\.\d{4,9}\//.test(id))return {kind:"doi",id:id};
+  if(/^pmid:?\s*\d+$/i.test(id))return {kind:"pmid",id:id.replace(/\D/g,"")};
+  if(/^\d{5,9}$/.test(id))return {kind:"pmid",id:id};
+  if(id)return {kind:"doi",id:id}; // best effort
+  return null;
+}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function statusLine(idtext,state,msg){
+  var d=document.createElement("div"); d.className="st";
+  d.innerHTML='<span class="dot '+state+'"></span><code>'+esc(idtext)+'</code> <span>'+esc(msg||"")+'</span>';
+  return d;
+}
+async function fetchDOI(doi){
+  var res=await fetch("https://api.crossref.org/works/"+encodeURIComponent(doi),{headers:{"Accept":"application/json"}});
+  if(!res.ok)throw new Error("HTTP "+res.status);
+  var j=await res.json(); return fromCrossref(j.message);
+}
+async function fetchPMID(pmid){
+  var res=await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id="+encodeURIComponent(pmid));
+  if(!res.ok)throw new Error("HTTP "+res.status);
+  var j=await res.json(); var r=j.result&&j.result[pmid];
+  if(!r||r.error)throw new Error("not found"); return fromPubmed(r);
+}
+
+$("go").onclick=async function(){
+  var raw=$("ids").value.split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
+  if(!raw.length){ return; }
+  $("go").disabled=true; RECORDS=[]; $("status").innerHTML="";
+  var ok=0,fail=0;
+  for(var i=0;i<raw.length;i++){
+    var c=classify(raw[i]); var line=statusLine(raw[i],"wait","looking up…"); $("status").appendChild(line);
+    $("prog").textContent="Fetching "+(i+1)+" of "+raw.length+"…";
+    try{
+      var rec= c.kind==="doi"? await fetchDOI(c.id) : await fetchPMID(c.id);
+      if(!rec.title&&!rec.authors.length)throw new Error("empty record");
+      RECORDS.push(rec); ok++;
+      line.innerHTML='<span class="dot ok"></span><code>'+esc(raw[i])+'</code> <span>'+esc((rec.authors[0]&&rec.authors[0].family||"")+(rec.year?" ("+rec.year+")":""))+'</span>';
+    }catch(e){
+      fail++;
+      line.innerHTML='<span class="dot err"></span><code>'+esc(raw[i])+'</code> <span>not found ('+esc(e.message)+')</span>';
+    }
+    await sleep(130);
+  }
+  $("prog").textContent=ok+" formatted"+(fail?", "+fail+" failed":"")+".";
+  $("go").disabled=false;
+  if(RECORDS.length){ $("results").classList.remove("hidden"); renderOut(); }
+};
+
+$("tabs").addEventListener("click",function(e){
+  var t=e.target.closest(".tab"); if(!t)return;
+  STYLE=t.getAttribute("data-s");
+  $("tabs").querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+  renderOut();
+});
+$("copy").onclick=function(){
+  var txt=$("out").getAttribute("data-text")||"";
+  navigator.clipboard.writeText(txt).then(function(){ $("copy").classList.add("done"); $("copy").textContent="Copied ✓"; setTimeout(function(){$("copy").classList.remove("done");$("copy").textContent="Copy all";},1400); });
+};
+$("demo").onclick=function(){ $("ids").value="10.1094/PDIS-01-19-0001\n10.1016/j.jviromet.2021.114000\n10.1038/s41586-020-2196-x"; };
+</script>
+</body>
+</html>
