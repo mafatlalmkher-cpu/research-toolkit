@@ -1,0 +1,11 @@
+{
+  "title": "Research Toolkit: a free, single-file, browser-based toolkit for research workflows",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    { "name": "Kher, Mafatlal M.", "orcid": "0000-0001-5600-0040", "affiliation": "Department of Chemical Engineering, Ariel University, Israel" },
+    { "name": "Drori, Elyashiv", "orcid": "0000-0003-3353-0465", "affiliation": "Department of Chemical Engineering, Ariel University, Israel" }
+  ],
+  "description": "Free, single-file, browser-based companion tools to QueryBee for the literature-review and bench-science workflow: a guide to free tools for every review stage, a PRISMA 2020 flow-diagram maker, a citation de-duplicator, a reference formatter, an abstract-screening referral, bench calculators (molecular biology, qPCR, solutions, and a tissue-culture studio), and a tissue-culture manuscript checklist. No account, API key, or server is required. Released under the MIT licence.",
+  "keywords": ["systematic review", "literature review", "PRISMA", "reference management", "tissue culture", "qPCR", "research tools"]
+}

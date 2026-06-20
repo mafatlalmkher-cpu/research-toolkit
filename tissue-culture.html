@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tissue-culture media calculator — PGR stocks, mg/L ↔ µM</title>
-<meta name="description" content="Free, offline plant tissue culture calculator: how much hormone stock to add to a medium, mg/L to µM conversion for common plant growth regulators (BA, IBA, NAA, TDZ, 2,4-D and more), stock preparation, and recipe scaling. Runs in your browser.">
-<meta name="author" content="Mafatlal M. Kher">
+<title>Tissue-culture studio — media, PGRs, gelling, hardening</title>
+<meta name="description" content="Free, offline plant tissue culture toolkit: plant growth regulator stock calculations, mg/L to µM conversion, full salt-by-salt composition for MS, B5, WPM, DKW, SH, Nitsch and White media with batch scaling, gelling-agent comparison, acclimatisation guidance, and how to start and what to avoid for PCTOC-style work. Runs in your browser.">
+<meta name="author" content="Mafatlal M. Kher, Elyashiv Drori">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -14,48 +14,75 @@
     --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
     --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
     --green:#2A6F4E;--green-deep:#1E5439;--green-bg:#E4F0E9;--green-line:#B9D9C7;
+    --amber-bg:#FBEEE1;--amber-deep:#9C4D12;--amber-line:#E8C9A8;
     --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
     background-image:radial-gradient(circle at 8% -5%,rgba(42,111,78,.06),transparent 40%);}
+  a{color:var(--go-deep)}
   a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--go);outline-offset:2px}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px 90px}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px 90px}
   .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
   .back:hover{color:var(--go-deep)}
-  header.top{padding:14px 0 22px;border-bottom:1px solid var(--rule);margin-bottom:24px}
+  header.top{padding:14px 0 22px;border-bottom:1px solid var(--rule);margin-bottom:20px}
   .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:12px}
   h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:0 0 12px}
-  .lede{font-size:16.5px;color:var(--ink-soft);max-width:72ch;margin:0}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:74ch;margin:0}
   .tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
   .tab{font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 15px;border:1px solid var(--rule-strong);border-radius:999px;background:#fff;color:var(--ink-soft);cursor:pointer}
   .tab.on{background:var(--green-deep);color:#fff;border-color:var(--green-deep)}
+  .subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .subtab{font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border:1px solid var(--rule-strong);border-radius:8px;background:var(--paper);color:var(--ink-soft);cursor:pointer}
+  .subtab.on{background:#fff;color:var(--go-deep);border-color:var(--go);box-shadow:var(--shadow)}
   .panel{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
-  .panel h2{font-family:"Fraunces",serif;font-size:19px;font-weight:600;margin:0 0 4px}
-  .panel .sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 18px}
+  .panel h2{font-family:"Fraunces",serif;font-size:20px;font-weight:600;margin:0 0 4px}
+  .panel h3{font-family:"Fraunces",serif;font-size:16.5px;font-weight:600;margin:20px 0 6px}
+  .panel .sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 18px;max-width:74ch}
+  .panel p{max-width:74ch}
   .qrow{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
   .field{display:flex;flex-direction:column;gap:5px}
   label.fl{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
   input[type=number],input[type=text],select{border:1px solid var(--rule-strong);border-radius:8px;padding:9px 10px;font-family:"JetBrains Mono",monospace;font-size:14px;background:var(--paper);color:var(--ink)}
   select{font-family:inherit}
   input:focus,select:focus{outline:none;border-color:var(--go)}
-  .num{width:118px}.unit{width:88px}
+  .num{width:118px}.unit{width:92px}.wide{min-width:230px}
   .pgr{min-width:230px}
   .result{margin-top:6px;background:var(--green-bg);border:1px solid var(--green-line);border-radius:11px;padding:15px 18px}
-  .result .big{font-family:"Fraunces",serif;font-size:25px;font-weight:600;color:var(--green-deep)}
+  .result .big{font-family:"Fraunces",serif;font-size:24px;font-weight:600;color:var(--green-deep)}
   .result .sub2{font-size:13.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
   .pgrinfo{font-size:12.5px;color:var(--ink-soft);margin-top:10px;background:var(--paper);border:1px dashed var(--rule-strong);border-radius:9px;padding:10px 13px;line-height:1.5}
   .pgrinfo b{color:var(--ink)}
-  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
-  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:7px 8px;border-bottom:1px solid var(--rule-strong)}
-  td{padding:5px 7px;border-bottom:1px dashed var(--rule)}
-  td input{width:100%;border:1px solid var(--rule-strong);border-radius:7px;padding:7px 8px;font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper)}
-  td.out{font-family:"JetBrains Mono",monospace;color:var(--green-deep);font-weight:600}
+  .tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:12px;background:#fff;margin-top:10px}
+  table{width:100%;border-collapse:collapse;font-size:13.4px}
+  .tablewrap table{min-width:520px}
+  th{text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:9px 11px;border-bottom:1px solid var(--rule-strong);background:#F4EEE3}
+  td{padding:7px 11px;border-bottom:1px dashed var(--rule);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  td.out{font-family:"JetBrains Mono",monospace;color:var(--green-deep);font-weight:600;white-space:nowrap}
+  td.val{font-family:"JetBrains Mono",monospace;white-space:nowrap}
+  td.cmp{font-weight:700;white-space:nowrap}
+  /* editable recipe table */
+  #r_table td input{width:100%;border:1px solid var(--rule-strong);border-radius:7px;padding:7px 8px;font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper)}
   td.del{width:30px;text-align:center}.delbtn{border:none;background:none;color:var(--danger);font-size:17px;cursor:pointer}
   .mini{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--go-deep);background:#fff;border:1px solid var(--rule-strong);border-radius:8px;padding:7px 12px;cursor:pointer;margin-top:12px}
   .hidden{display:none}
-  .note{font-size:12.5px;color:var(--ink-faint);margin-top:14px;line-height:1.55}
+  .note{font-size:12.5px;color:var(--ink-faint);margin-top:14px;line-height:1.55;max-width:74ch}
+  .callout{background:var(--green-bg);border:1px solid var(--green-line);border-radius:11px;padding:13px 16px;margin:14px 0;font-size:14px;line-height:1.55}
+  .callout.amber{background:var(--amber-bg);border-color:var(--amber-line)}
+  .callout b{color:var(--green-deep)}
+  .callout.amber b{color:var(--amber-deep)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  .leadcard{border:1px solid var(--rule);border-radius:12px;padding:15px 17px;background:var(--paper)}
+  .leadcard h3{margin-top:0}
+  ol.steps,ul.tight{padding-left:20px;max-width:74ch}
+  ol.steps li,ul.tight li{margin-bottom:7px;font-size:14.5px;line-height:1.5}
+  .reflist{font-size:13px;color:var(--ink-soft);line-height:1.65;max-width:80ch}
+  .reflist div{margin-bottom:7px}
+  .summ{font-size:13px;color:var(--ink-soft);margin-top:10px}
+  .summ b{color:var(--ink)}
   footer.foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
   footer.foot a{color:var(--go-deep)}
 </style>
@@ -65,88 +92,277 @@
   <a class="back" href="index.html">← Research Toolkit</a>
   <header class="top">
     <div class="eyebrow">At the bench</div>
-    <h1>Tissue-culture media calculator</h1>
-    <p class="lede">Plant growth regulators are the fiddly part of making a medium. These tools convert between mg·L⁻¹ and µM, work out how much stock to pipette, and scale a recipe to any volume, using molecular weights for the regulators you actually use.</p>
+    <h1>Tissue-culture studio</h1>
+    <p class="lede">A working set of tools for plant tissue culture: growth-regulator maths, full salt-by-salt media recipes you can scale to any batch, a comparison of basal media and gelling agents, acclimatisation guidance, and a plain account of how to start a study and what to avoid. Everything runs in your browser and works offline.</p>
   </header>
 
-  <div class="tabs">
-    <button class="tab on" data-t="add">Add stock to medium</button>
-    <button class="tab" data-t="conv">mg·L⁻¹ ↔ µM</button>
-    <button class="tab" data-t="stock">Make a stock</button>
-    <button class="tab" data-t="scale">Scale a recipe</button>
+  <div class="tabs" id="toptabs">
+    <button class="tab on" data-top="calc">🧮 PGR calculators</button>
+    <button class="tab" data-top="media">🧪 Media &amp; salts</button>
+    <button class="tab" data-top="gel">🧫 Gelling agents</button>
+    <button class="tab" data-top="hard">🪴 Hardening</button>
+    <button class="tab" data-top="start">🧭 Start &amp; avoid</button>
+    <button class="tab" data-top="res">📚 Resources</button>
   </div>
 
-  <!-- ADD STOCK -->
-  <section class="panel" data-pane="add">
-    <h2>How much stock to add</h2>
-    <p class="sub">Pick a regulator, the concentration you want in the medium, the batch volume, and your stock strength.</p>
-    <div class="qrow">
-      <div class="field"><label class="fl">Plant growth regulator</label><select class="pgr" id="a_pgr"></select></div>
+  <!-- ===================== CALCULATORS ===================== -->
+  <div data-toppane="calc">
+    <div class="subtabs" id="calctabs">
+      <button class="subtab on" data-t="add">Add stock to medium</button>
+      <button class="subtab" data-t="conv">mg·L⁻¹ ↔ µM</button>
+      <button class="subtab" data-t="stock">Make a stock</button>
+      <button class="subtab" data-t="scale">Scale a recipe</button>
     </div>
-    <div class="qrow">
-      <div class="field"><label class="fl">Target in medium</label><input class="num" type="number" id="a_final" step="any" value="1.0"></div>
-      <select class="unit" id="a_finalu"><option>mg/L</option><option>µM</option></select>
-      <div class="field"><label class="fl">Medium volume</label><input class="num" type="number" id="a_vol" step="any" value="1"></div>
-      <select class="unit" id="a_volu"><option>L</option><option>mL</option></select>
-    </div>
-    <div class="qrow">
-      <div class="field"><label class="fl">Stock concentration</label><input class="num" type="number" id="a_stock" step="any" value="1"></div>
-      <select class="unit" id="a_stocku"><option>mg/mL</option><option>mM</option></select>
-    </div>
-    <div class="result"><div class="big" id="a_out">–</div><div class="sub2" id="a_detail"></div></div>
-    <div class="pgrinfo" id="a_info"></div>
-    <p class="note">Volume of stock = (target mg·L⁻¹ × medium L) ÷ stock mg·mL⁻¹. A 1 mg·mL⁻¹ stock is convenient: 1 mL gives 1 mg·L⁻¹ in 1 L of medium.</p>
-  </section>
 
-  <!-- CONVERT -->
-  <section class="panel hidden" data-pane="conv">
-    <h2>mg·L⁻¹ ↔ µM</h2>
-    <p class="sub">Concentration interconversion for one regulator. Edit either box.</p>
-    <div class="qrow">
-      <div class="field"><label class="fl">Regulator</label><select class="pgr" id="c_pgr"></select></div>
-      <div class="field"><label class="fl">mg·L⁻¹</label><input class="num" type="number" id="c_mgl" step="any" value="1.0"></div>
-      <div class="eq" style="padding-bottom:8px;color:var(--ink-faint)">↔</div>
-      <div class="field"><label class="fl">µM</label><input class="num" type="number" id="c_um" step="any" value=""></div>
-    </div>
-    <div class="pgrinfo" id="c_info"></div>
-    <p class="note">µM = mg·L⁻¹ × 1000 ÷ MW. mg·L⁻¹ = µM × MW ÷ 1000.</p>
-  </section>
+    <section class="panel" data-pane="add">
+      <h2>How much stock to add</h2>
+      <p class="sub">Pick a regulator, the concentration you want in the medium, the batch volume, and your stock strength.</p>
+      <div class="qrow">
+        <div class="field"><label class="fl">Plant growth regulator</label><select class="pgr" id="a_pgr"></select></div>
+      </div>
+      <div class="qrow">
+        <div class="field"><label class="fl">Target in medium</label><input class="num" type="number" id="a_final" step="any" value="1.0"></div>
+        <select class="unit" id="a_finalu"><option>mg/L</option><option>µM</option></select>
+        <div class="field"><label class="fl">Medium volume</label><input class="num" type="number" id="a_vol" step="any" value="1"></div>
+        <select class="unit" id="a_volu"><option>L</option><option>mL</option></select>
+      </div>
+      <div class="qrow">
+        <div class="field"><label class="fl">Stock concentration</label><input class="num" type="number" id="a_stock" step="any" value="1"></div>
+        <select class="unit" id="a_stocku"><option>mg/mL</option><option>mM</option></select>
+      </div>
+      <div class="result"><div class="big" id="a_out">–</div><div class="sub2" id="a_detail"></div></div>
+      <div class="pgrinfo" id="a_info"></div>
+      <p class="note">Volume of stock = (target mg·L⁻¹ × medium L) ÷ stock mg·mL⁻¹. A 1 mg·mL⁻¹ stock is convenient: 1 mL gives 1 mg·L⁻¹ in 1 L of medium.</p>
+    </section>
 
-  <!-- MAKE STOCK -->
-  <section class="panel hidden" data-pane="stock">
-    <h2>Prepare a stock solution</h2>
-    <p class="sub">How much to weigh for a stock, and how to dissolve it.</p>
-    <div class="qrow">
-      <div class="field"><label class="fl">Regulator</label><select class="pgr" id="k_pgr"></select></div>
-      <div class="field"><label class="fl">Stock strength</label><input class="num" type="number" id="k_conc" step="any" value="1"></div>
-      <select class="unit" id="k_concu"><option>mg/mL</option><option>mM</option></select>
-      <div class="field"><label class="fl">Stock volume (mL)</label><input class="num" type="number" id="k_vol" step="any" value="10"></div>
-    </div>
-    <div class="result"><div class="big" id="k_out">–</div><div class="sub2" id="k_detail"></div></div>
-    <div class="pgrinfo" id="k_info"></div>
-    <p class="note">Weigh the shown mass, dissolve in the minimum volume of the indicated solvent, then make up to the stock volume with water. Store cold and dark; note which regulators are heat-labile and should be filter-sterilised rather than autoclaved.</p>
-  </section>
+    <section class="panel hidden" data-pane="conv">
+      <h2>mg·L⁻¹ ↔ µM</h2>
+      <p class="sub">Concentration interconversion for one regulator. Edit either box.</p>
+      <div class="qrow">
+        <div class="field"><label class="fl">Regulator</label><select class="pgr" id="c_pgr"></select></div>
+        <div class="field"><label class="fl">mg·L⁻¹</label><input class="num" type="number" id="c_mgl" step="any" value="1.0"></div>
+        <div style="padding-bottom:8px;color:var(--ink-faint)">↔</div>
+        <div class="field"><label class="fl">µM</label><input class="num" type="number" id="c_um" step="any" value=""></div>
+      </div>
+      <div class="pgrinfo" id="c_info"></div>
+      <p class="note">µM = mg·L⁻¹ × 1000 ÷ MW. mg·L⁻¹ = µM × MW ÷ 1000.</p>
+    </section>
 
-  <!-- SCALE -->
-  <section class="panel hidden" data-pane="scale">
-    <h2>Scale a recipe</h2>
-    <p class="sub">Enter amounts per litre; the tool scales them to your batch volume.</p>
-    <div class="qrow">
-      <div class="field"><label class="fl">Batch volume (L)</label><input class="num" type="number" id="r_vol" step="any" value="2"></div>
-    </div>
-    <table id="r_table"><thead><tr><th style="width:42%">Component</th><th>Amount per L</th><th>Unit</th><th>For batch</th><th></th></tr></thead><tbody id="r_body"></tbody></table>
-    <button class="mini" id="r_add">+ add component</button>
-    <p class="note">Works for any per-litre quantity: salts (mg or g), sucrose (g), agar (g), or stock volumes (mL). Units are carried through unchanged.</p>
-  </section>
+    <section class="panel hidden" data-pane="stock">
+      <h2>Prepare a stock solution</h2>
+      <p class="sub">How much to weigh for a stock, and how to dissolve it.</p>
+      <div class="qrow">
+        <div class="field"><label class="fl">Regulator</label><select class="pgr" id="k_pgr"></select></div>
+        <div class="field"><label class="fl">Stock strength</label><input class="num" type="number" id="k_conc" step="any" value="1"></div>
+        <select class="unit" id="k_concu"><option>mg/mL</option><option>mM</option></select>
+        <div class="field"><label class="fl">Stock volume (mL)</label><input class="num" type="number" id="k_vol" step="any" value="10"></div>
+      </div>
+      <div class="result"><div class="big" id="k_out">–</div><div class="sub2" id="k_detail"></div></div>
+      <div class="pgrinfo" id="k_info"></div>
+      <p class="note">Weigh the shown mass, dissolve in the minimum volume of the indicated solvent, then make up to the stock volume with water. Store cold and dark; heat-labile regulators should be filter-sterilised rather than autoclaved.</p>
+    </section>
+
+    <section class="panel hidden" data-pane="scale">
+      <h2>Scale a recipe</h2>
+      <p class="sub">Enter amounts per litre; the tool scales them to your batch volume.</p>
+      <div class="qrow">
+        <div class="field"><label class="fl">Batch volume (L)</label><input class="num" type="number" id="r_vol" step="any" value="2"></div>
+      </div>
+      <div class="tablewrap"><table id="r_table"><thead><tr><th style="width:42%">Component</th><th>Amount per L</th><th>Unit</th><th>For batch</th><th></th></tr></thead><tbody id="r_body"></tbody></table></div>
+      <button class="mini" id="r_add">+ add component</button>
+      <p class="note">Works for any per-litre quantity: salts (mg or g), sucrose (g), agar (g), or stock volumes (mL). Units are carried through unchanged.</p>
+    </section>
+  </div>
+
+  <!-- ===================== MEDIA & SALTS ===================== -->
+  <div data-toppane="media" class="hidden">
+    <section class="panel">
+      <h2>Which basal medium, and why</h2>
+      <p class="sub">Eight classical formulations, ordered roughly from richest to most dilute. "Total macro salts" is the sum of the macronutrient salts and is a rough guide to ionic strength, not a substitute for matching the medium to your species and aim.</p>
+      <div class="tablewrap"><table id="ov_table">
+        <thead><tr><th>Medium</th><th>Year</th><th>Nitrogen</th><th>Total macro salts</th><th>Best for</th><th>Watch-outs</th></tr></thead>
+        <tbody id="ov_body"></tbody>
+      </table></div>
+      <div class="callout"><b>Half-strength (½MS and others).</b> Many rooting and establishment media are simply the basal salts at half strength with full vitamins and lower sugar. Use the strength control below set to 0.5 rather than a separate recipe.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Full composition and batch weigh-out</h2>
+      <p class="sub">Pick a medium, a strength factor, and your batch volume. The tool lists every salt at full strength (mg·L⁻¹) and the mass to weigh for your batch. Add carbon source, gelling agent, and growth regulators separately.</p>
+      <div class="qrow">
+        <div class="field"><label class="fl">Medium</label><select class="wide" id="m_sel"></select></div>
+        <div class="field"><label class="fl">Strength (× full)</label><input class="num" type="number" id="m_str" step="any" value="1"></div>
+        <div class="field"><label class="fl">Batch volume (L)</label><input class="num" type="number" id="m_vol" step="any" value="1"></div>
+      </div>
+      <div class="summ" id="m_head"></div>
+      <div id="m_tables"></div>
+      <div class="callout amber" id="m_note"></div>
+      <p class="note" id="m_src"></p>
+    </section>
+  </div>
+
+  <!-- ===================== GELLING AGENTS ===================== -->
+  <div data-toppane="gel" class="hidden">
+    <section class="panel">
+      <h2>Gelling agents compared</h2>
+      <p class="sub">What sets the medium changes its clarity, firmness, cost, and how often cultures turn glassy. Concentrations are typical ranges; optimise for your species and vessel.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Agent</th><th>Typical use</th><th>Gel &amp; clarity</th><th>Relative cost</th><th>When to reach for it</th></tr></thead>
+        <tbody>
+          <tr><td class="cmp">Agar (plant grade)</td><td class="val">6–10 g·L⁻¹</td><td>Firm, opaque</td><td>Low–moderate</td><td>The workhorse. Tolerant of pH and handling; impurity level varies by grade.</td></tr>
+          <tr><td class="cmp">Agar (purified/washed)</td><td class="val">6–8 g·L⁻¹</td><td>Firm, clearer</td><td>Moderate</td><td>Sensitive species, protoplast or single-cell plating where agar impurities interfere.</td></tr>
+          <tr><td class="cmp">Gellan gum (Gelrite, Phytagel)</td><td class="val">2–4 g·L⁻¹</td><td>Transparent, brittle</td><td>Moderate (low use rate)</td><td>Clear gel that shows contamination early; needs Ca²⁺/Mg²⁺ to set. Too soft promotes hyperhydricity.</td></tr>
+          <tr><td class="cmp">Agar–gellan blend</td><td class="val">~5 g agar + 1–2 g gellan</td><td>Semi-clear, firm</td><td>Moderate</td><td>Balances clarity and firmness; fewer glassy shoots than gellan alone.</td></tr>
+          <tr><td class="cmp">Agarose</td><td class="val">5–8 g·L⁻¹</td><td>Very clear</td><td>High</td><td>Protoplast, bead, and single-cell culture. Rarely worth it for routine work.</td></tr>
+          <tr><td class="cmp">Isabgol (psyllium husk)</td><td class="val">20–40 g·L⁻¹</td><td>Translucent, soft</td><td>Very low</td><td>Low-cost substitute studied for several species; weaker, batch-variable gel.</td></tr>
+          <tr><td class="cmp">Starch / sago / semolina</td><td class="val">30–60 g·L⁻¹</td><td>Opaque, soft</td><td>Very low</td><td>Low-resource substitutes; results are species-dependent, test before scaling.</td></tr>
+          <tr><td class="cmp">Liquid + support</td><td class="val">none</td><td>n/a</td><td>Variable</td><td>Filter-paper bridges, rafts, or temporary immersion. Good for some shoot multiplication; submersion risks hyperhydricity.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Tips that prevent a failed batch</h3>
+      <div class="callout"><b>Gellan needs divalent cations.</b> In low-salt media (½MS, WPM, White) gellan may not set. Supply a little Ca²⁺/Mg²⁺, or blend with agar.</div>
+      <div class="callout amber"><b>Acid and over-autoclaving weaken gels.</b> Agar hydrolyses at low pH and with prolonged heat. Adjust pH to 5.6–5.8 before autoclaving and do not sterilise longer than the volume needs.</div>
+      <div class="callout"><b>Soft gel and liquid contact cause hyperhydricity</b> (glassy, water-soaked shoots). Firmer gel, ventilated closures, and lower cytokinin reduce it.</div>
+      <p class="note">Activated charcoal and high sugar lower effective gel strength, so raise the gelling agent a little when you use them. Water quality matters: hard tap water adds uncontrolled cations. Use RO or distilled water where you can.</p>
+    </section>
+  </div>
+
+  <!-- ===================== HARDENING ===================== -->
+  <div data-toppane="hard" class="hidden">
+    <section class="panel">
+      <h2>Acclimatisation (hardening off)</h2>
+      <p class="sub">Plantlets grown in vitro have a thin cuticle, stomata that do not close properly, and little photosynthetic capacity, in a vessel near 100% humidity. Moving them out is where many protocols lose their plants, so treat it as a stage with its own data, not an afterthought.</p>
+
+      <h3>A working sequence</h3>
+      <ol class="steps">
+        <li>A day or two before transfer, loosen or open the closures and lower the light to begin adjustment.</li>
+        <li>Lift the plantlets and wash <b>all</b> gelling agent from the roots in clean water; residue harbours microbes and rots roots.</li>
+        <li>For fragile species, a brief dip in a broad-spectrum fungicide is optional.</li>
+        <li>Plant in a sterile, low-nutrient, free-draining substrate (cocopeat:perlite 1:1, peat:vermiculite, or sand mixes). Avoid garden soil.</li>
+        <li>Hold humidity high at first (90–95%) with a propagator lid, mist, or polytunnel, in bright shade rather than direct sun.</li>
+        <li>Reduce humidity gradually over 2–4 weeks by venting a little more each day, so the cuticle and stomata become functional.</li>
+        <li>Start a weak feed (¼-strength nutrients) after the first week or two, once new growth appears.</li>
+        <li>Raise the light in steps; move to ambient conditions only after new, ex vitro leaves have hardened.</li>
+      </ol>
+
+      <div class="grid2">
+        <div class="leadcard">
+          <h3>Tricks worth trying</h3>
+          <ul class="tight">
+            <li><b>Ex vitro rooting:</b> root microcuttings directly in substrate with an auxin dip, hardening and rooting in one step.</li>
+            <li><b>Bottom heat</b> at 22–25 °C speeds rooting and establishment.</li>
+            <li><b>Antitranspirant sprays</b> cut early water loss for difficult species.</li>
+            <li><b>Stagger the venting:</b> a little more air each day beats one large drop in humidity.</li>
+          </ul>
+        </div>
+        <div class="leadcard">
+          <h3>What to avoid</h3>
+          <ul class="tight">
+            <li>Gel left on roots, which rots them and seeds contamination.</li>
+            <li>Sudden low humidity or direct sun, which desiccates in vitro leaves.</li>
+            <li>Full-strength fertiliser early, which burns weak roots.</li>
+            <li>Waterlogged, reused, or non-sterile substrate, which invites damping-off.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout"><b>Report it so it counts.</b> Give the substrate, the humidity regime and how it was reduced, light, temperature, duration, and survival percentage with the number of plants at a stated time point. A multiplication protocol without ex vitro survival data is incomplete.</div>
+    </section>
+  </div>
+
+  <!-- ===================== START & AVOID ===================== -->
+  <div data-toppane="start" class="hidden">
+    <section class="panel">
+      <h2>How to start, what to avoid, what to target</h2>
+      <p class="sub">Plant Cell, Tissue and Organ Culture (PCTOC) and its sister journals reward studies that resolve a real bottleneck and report enough to be repeated. The choices below decide both the biology and whether the work is publishable.</p>
+
+      <h3>How to start</h3>
+      <ul class="tight">
+        <li><b>Fix the objective first.</b> Rapid multiplication, de novo regeneration, virus elimination, somatic embryogenesis, conservation, or transformation. The aim sets the explant, the medium, and the data a reader expects.</li>
+        <li><b>Match the explant to the aim.</b> Nodal segments and shoot tips for clonal multiplication and fidelity; meristem tips for virus elimination; leaf, internode, or immature tissue for callus and regeneration; anthers or microspores for haploids.</li>
+        <li><b>Build a sterilisation protocol and report its numbers,</b> the contamination and survival rates, not only the surviving clean cultures.</li>
+        <li><b>Pick a basal medium</b> from the comparison tab, then screen growth regulators across a justified dose range with a regulator-free control.</li>
+        <li><b>Design replication in from the start:</b> the independent explant as the unit, repeated in time, with enough replicates for the test you plan to run.</li>
+      </ul>
+
+      <h3>What to avoid</h3>
+      <ul class="tight">
+        <li><b>Pseudoreplication:</b> treating shoots from one explant, or jars from one vessel batch, as independent replicates.</li>
+        <li><b>One genotype, general claim:</b> a result from a single cultivar written as if it held for the species.</li>
+        <li><b>Silent hyperhydricity and somaclonal variation:</b> not checking for them, or not reporting them.</li>
+        <li><b>Missing acclimatisation:</b> stopping at in vitro rooting with no ex vitro survival.</li>
+        <li><b>An incompletely specified medium:</b> regulators in mg·L⁻¹ only or µM only, no gelling agent, no pH, no sterilisation detail.</li>
+        <li><b>No fidelity check</b> behind a clonal-propagation claim.</li>
+      </ul>
+
+      <h3>What to target</h3>
+      <ul class="tight">
+        <li><b>Go past "another species on MS + BA."</b> Add a mechanism, a comparison that settles a real difficulty, or a method others can transfer.</li>
+        <li><b>Include genetic fidelity</b> (SSR, ISSR, SCoT, or flow cytometry) for micropropagation, and acclimatisation with survival data.</li>
+        <li><b>Report design and statistics in full</b> so the result can be reproduced.</li>
+        <li><b>State the advance in the first paragraph:</b> the problem, the gap, and what this study adds.</li>
+      </ul>
+      <div class="callout"><b>Before you submit,</b> run the work through the <a href="ptc-manuscript-review.html">forensic manuscript checklist</a>, the same checks an editor and reviewer will apply.</div>
+    </section>
+  </div>
+
+  <!-- ===================== RESOURCES ===================== -->
+  <div data-toppane="res" class="hidden">
+    <section class="panel">
+      <h2>Resources and references</h2>
+      <p class="sub">Where the recipes here come from, and where to read further. Supplier formulation pages are free and useful for cross-checking the exact hydrate form and certificate-of-analysis values.</p>
+
+      <h3>The original media papers</h3>
+      <div class="reflist">
+        <div>Murashige T, Skoog F (1962) A revised medium for rapid growth and bioassays with tobacco tissue cultures. <i>Physiologia Plantarum</i> 15:473–497. doi:<a href="https://doi.org/10.1111/j.1399-3054.1962.tb08052.x">10.1111/j.1399-3054.1962.tb08052.x</a></div>
+        <div>Linsmaier EM, Skoog F (1965) Organic growth factor requirements of tobacco tissue cultures. <i>Physiologia Plantarum</i> 18:100–127. doi:<a href="https://doi.org/10.1111/j.1399-3054.1965.tb06874.x">10.1111/j.1399-3054.1965.tb06874.x</a></div>
+        <div>Gamborg OL, Miller RA, Ojima K (1968) Nutrient requirements of suspension cultures of soybean root cells. <i>Experimental Cell Research</i> 50:151–158. doi:<a href="https://doi.org/10.1016/0014-4827(68)90403-5">10.1016/0014-4827(68)90403-5</a></div>
+        <div>Schenk RU, Hildebrandt AC (1972) Medium and techniques for induction and growth of monocotyledonous and dicotyledonous plant cell cultures. <i>Canadian Journal of Botany</i> 50:199–204. doi:<a href="https://doi.org/10.1139/b72-026">10.1139/b72-026</a></div>
+        <div>Nitsch JP, Nitsch C (1969) Haploid plants from pollen grains. <i>Science</i> 163:85–87. doi:<a href="https://doi.org/10.1126/science.163.3862.85">10.1126/science.163.3862.85</a></div>
+        <div>Lloyd G, McCown B (1980) Commercially feasible micropropagation of mountain laurel, <i>Kalmia latifolia</i>, by use of shoot-tip culture. <i>Combined Proceedings of the International Plant Propagators' Society</i> 30:421–427.</div>
+        <div>Driver JA, Kuniyuki AH (1984) In vitro propagation of Paradox walnut rootstock. <i>HortScience</i> 19:507–509.</div>
+        <div>White PR (1963) <i>The Cultivation of Animal and Plant Cells</i>, 2nd ed. Ronald Press, New York.</div>
+      </div>
+
+      <h3>Reference works</h3>
+      <div class="reflist">
+        <div>George EF, Hall MA, De Klerk G-J (eds) (2008) <i>Plant Propagation by Tissue Culture, Vol. 1: The Background</i>, 3rd ed. Springer.</div>
+        <div>Trigiano RN, Gray DJ (2011) <i>Plant Tissue Culture, Development, and Biotechnology</i>. CRC Press.</div>
+      </div>
+
+      <h3>Free formulation tables and protocols</h3>
+      <ul class="tight">
+        <li>Sigma-Aldrich, <a href="https://www.sigmaaldrich.com/US/en/technical-documents/technical-article/cell-culture-and-cell-culture-analysis/plant-tissue-culture/classic-plant-media" target="_blank" rel="noopener">Classical Plant Media Formulations</a></li>
+        <li><a href="https://phytotechlab.com" target="_blank" rel="noopener">PhytoTech Labs</a> and <a href="https://duchefa-biochemie.com" target="_blank" rel="noopener">Duchefa Biochemie</a> product pages list each medium's full composition.</li>
+        <li><a href="https://www.protocols.io" target="_blank" rel="noopener">protocols.io</a> and <a href="https://bio-protocol.org" target="_blank" rel="noopener">Bio-protocol</a> for free, citable step-by-step methods.</li>
+      </ul>
+
+      <h3>The rest of this toolkit</h3>
+      <p>The <a href="solutions.html">solution &amp; dilution calculator</a> handles C₁V₁=C₂V₂, molarity, and serial dilutions; the <a href="molbio.html">molecular biology toolkit</a> and <a href="qpcr.html">qPCR tools</a> help if you screen cultures for viruses or expression. The <a href="ptc-manuscript-review.html">forensic manuscript checklist</a> covers writing it up.</p>
+    </section>
+  </div>
 
   <footer class="foot">
-    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT). Molecular weights are standard values; always confirm against your reagent's certificate of analysis. Solvent and sterilisation notes are general guidance, not a substitute for the regulator's data sheet.
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT), by Mafatlal M. Kher (<a href="https://orcid.org/0000-0001-5600-0040" target="_blank" rel="noopener">ORCID 0000-0001-5600-0040</a>) and Elyashiv Drori (<a href="https://orcid.org/0000-0003-3353-0465" target="_blank" rel="noopener">ORCID 0000-0003-3353-0465</a>). Molecular weights and media compositions are standard published values, cross-checked against the original papers and PhytoTech and Duchefa supplier formulations; always confirm against your reagent's certificate of analysis. Solvent, sterilisation, gelling, and hardening notes are general guidance, not a substitute for a regulator's or supplier's data sheet.
   </footer>
 </div>
 
 <script>
 "use strict";
 var $=function(id){return document.getElementById(id);};
+function val(id){var v=$(id).value.trim();return v===""?null:parseFloat(v);}
+function fmt(x){ if(!isFinite(x))return "–"; var a=Math.abs(x); if(a===0)return "0"; if(a<0.001||a>=1e6)return x.toExponential(3); if(a<1)return parseFloat(x.toPrecision(4)).toString(); return parseFloat(x.toFixed(3)).toString(); }
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+/* ---------- top-level tabs ---------- */
+$("toptabs").addEventListener("click",function(e){
+  var t=e.target.closest(".tab"); if(!t)return;
+  document.querySelectorAll("#toptabs .tab").forEach(function(x){x.classList.toggle("on",x===t);});
+  var top=t.getAttribute("data-top");
+  document.querySelectorAll("[data-toppane]").forEach(function(p){p.classList.toggle("hidden",p.getAttribute("data-toppane")!==top);});
+});
+
+/* ---------- PGR data + calculators ---------- */
 /* name, MW (g/mol), class, solvent, autoclavable */
 var PGR=[
   {n:"BA / BAP (6-benzylaminopurine)",mw:225.25,c:"cytokinin",s:"a few drops of 1 N NaOH (or HCl), then water",auto:true},
@@ -168,18 +384,15 @@ var PGR=[
 function fillPGR(sel){ sel.innerHTML=PGR.map(function(p,i){return '<option value="'+i+'">'+p.n+' — '+p.mw+'</option>';}).join(""); }
 ["a_pgr","c_pgr","k_pgr"].forEach(function(id){fillPGR($(id));});
 
-document.querySelector(".tabs").addEventListener("click",function(e){
-  var t=e.target.closest(".tab"); if(!t)return;
-  document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+$("calctabs").addEventListener("click",function(e){
+  var t=e.target.closest(".subtab"); if(!t)return;
+  document.querySelectorAll("#calctabs .subtab").forEach(function(x){x.classList.toggle("on",x===t);});
   var pane=t.getAttribute("data-t");
   document.querySelectorAll("[data-pane]").forEach(function(p){p.classList.toggle("hidden",p.getAttribute("data-pane")!==pane);});
 });
 
-function val(id){var v=$(id).value.trim();return v===""?null:parseFloat(v);}
-function fmt(x){ if(!isFinite(x))return "–"; var a=Math.abs(x); if(a===0)return "0"; if(a<0.001||a>=1e6)return x.toExponential(3); if(a<1)return parseFloat(x.toPrecision(4)).toString(); return parseFloat(x.toFixed(3)).toString(); }
 function info(p){ return '<b>'+p.n.split(" — ")[0]+'</b> · MW '+p.mw+' g/mol · '+p.c+'. Dissolve in '+p.s+'. '+(p.auto?'Generally autoclavable.':'<b>Heat-labile — filter-sterilise</b> and add after autoclaving.'); }
 
-/* ---- add stock ---- */
 function addCalc(){
   var p=PGR[+$("a_pgr").value]; $("a_info").innerHTML=info(p);
   var fv=val("a_final"), vol=val("a_vol"), st=val("a_stock");
@@ -196,7 +409,6 @@ function addCalc(){
 }
 ["a_pgr","a_final","a_finalu","a_vol","a_volu","a_stock","a_stocku"].forEach(function(id){$(id).addEventListener("input",addCalc);$(id).addEventListener("change",addCalc);});
 
-/* ---- convert ---- */
 function convFrom(which){
   var p=PGR[+$("c_pgr").value]; $("c_info").innerHTML=info(p);
   if(which==="mgl"){ var mgl=val("c_mgl"); if(mgl==null){$("c_um").value="";return;} $("c_um").value=fmt(mgl*1000/p.mw); }
@@ -207,7 +419,6 @@ $("c_mgl").addEventListener("input",function(){convFrom("mgl");});
 $("c_um").addEventListener("input",function(){convFrom("um");});
 $("c_pgr").addEventListener("change",function(){convFrom("mgl");});
 
-/* ---- make stock ---- */
 function stockCalc(){
   var p=PGR[+$("k_pgr").value]; $("k_info").innerHTML=info(p);
   var conc=val("k_conc"), vol=val("k_vol");
@@ -220,13 +431,12 @@ function stockCalc(){
 }
 ["k_pgr","k_conc","k_concu","k_vol"].forEach(function(id){$(id).addEventListener("input",stockCalc);$(id).addEventListener("change",stockCalc);});
 
-/* ---- scale ---- */
 var rRows=[{n:"MS salts + vitamins",a:"4.4",u:"g"},{n:"Sucrose",a:"30",u:"g"},{n:"BA stock (1 mg/mL)",a:"1",u:"mL"},{n:"Agar",a:"7",u:"g"}];
 function rRender(){
   var b=$("r_body"); b.innerHTML="";
   rRows.forEach(function(r,i){
     var tr=document.createElement("tr");
-    tr.innerHTML='<td><input data-k="n" value="'+esc(r.n)+'"></td><td><input data-k="a" value="'+esc(r.a)+'"></td><td><input data-k="u" value="'+esc(r.u)+'" style="width:70px"></td><td class="out" data-out></td><td class="del"><button class="delbtn">&times;</button></td>';
+    tr.innerHTML='<td><input data-k="n" value="'+esc(r.n)+'"></td><td><input data-k="a" value="'+esc(r.a)+'"></td><td><input data-k="u" value="'+esc(r.u)+'" style="width:70px"></td><td class="out" data-out></td><td class="del"><button class="delbtn" aria-label="remove">&times;</button></td>';
     tr.querySelectorAll("input").forEach(function(inp){ inp.addEventListener("input",function(){ r[inp.getAttribute("data-k")]=inp.value; rCalc(); }); });
     tr.querySelector(".delbtn").addEventListener("click",function(){ rRows.splice(i,1); rRender(); rCalc(); });
     b.appendChild(tr);
@@ -240,10 +450,133 @@ function rCalc(){
 }
 $("r_add").onclick=function(){ rRows.push({n:"",a:"",u:""}); rRender(); };
 $("r_vol").addEventListener("input",rCalc);
-function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+/* ---------- media data (mg/L at full strength) ---------- */
+/* Compositions cross-checked against the original papers and PhytoTech / Duchefa supplier formulations. */
+var MEDIA=[
+ {k:"MS",name:"Murashige & Skoog (MS)",year:1962,
+  use:"General default; most herbaceous species, multiplication and regeneration",
+  watch:"High ammonium can stress some woody and sensitive species",
+  nN:"High (NH₄⁺ + NO₃⁻)",
+  macro:[["NH₄NO₃",1650],["KNO₃",1900],["CaCl₂·2H₂O",440],["MgSO₄·7H₂O",370],["KH₂PO₄",170]],
+  micro:[["KI",0.83],["H₃BO₃",6.2],["MnSO₄·4H₂O",22.3],["ZnSO₄·7H₂O",8.6],["Na₂MoO₄·2H₂O",0.25],["CuSO₄·5H₂O",0.025],["CoCl₂·6H₂O",0.025]],
+  iron:[["FeSO₄·7H₂O",27.8],["Na₂EDTA·2H₂O",37.3]],
+  vit:[["myo-Inositol",100],["Nicotinic acid",0.5],["Pyridoxine·HCl",0.5],["Thiamine·HCl",0.1],["Glycine",2.0]],
+  note:"Original 1962 organics shown. The common Linsmaier–Skoog (1965) variant uses thiamine 0.4 mg·L⁻¹ and drops nicotinic acid, pyridoxine, and glycine.",
+  src:"Murashige & Skoog (1962); hydrate forms per PhytoTech / Duchefa."},
+
+ {k:"B5",name:"Gamborg (B5)",year:1968,
+  use:"Cell suspensions, protoplasts, legumes",
+  watch:"Low ammonium; not ideal alone for some shoot cultures",
+  nN:"Nitrate-rich, low NH₄⁺",
+  macro:[["KNO₃",2500],["CaCl₂·2H₂O",150],["MgSO₄·7H₂O",250],["(NH₄)₂SO₄",134],["NaH₂PO₄·H₂O",150]],
+  micro:[["KI",0.75],["H₃BO₃",3.0],["MnSO₄·H₂O",10.0],["ZnSO₄·7H₂O",2.0],["Na₂MoO₄·2H₂O",0.25],["CuSO₄·5H₂O",0.025],["CoCl₂·6H₂O",0.025]],
+  iron:[["FeSO₄·7H₂O",27.8],["Na₂EDTA·2H₂O",37.3]],
+  vit:[["myo-Inositol",100],["Nicotinic acid",1.0],["Pyridoxine·HCl",1.0],["Thiamine·HCl",10.0]],
+  note:"Distinctive high thiamine (10 mg·L⁻¹). Ammonium supplied as sulfate, not nitrate.",
+  src:"Gamborg, Miller & Ojima (1968); Fe as Fe-EDTA per commercial formulations."},
+
+ {k:"SH",name:"Schenk & Hildebrandt (SH)",year:1972,
+  use:"Monocot and dicot callus and cell suspension cultures",
+  watch:"High vitamin load; originally a suspension medium",
+  nN:"High nitrate, moderate NH₄⁺",
+  macro:[["KNO₃",2500],["NH₄H₂PO₄",300],["MgSO₄·7H₂O",400],["CaCl₂·2H₂O",200]],
+  micro:[["H₃BO₃",5.0],["MnSO₄·H₂O",10.0],["ZnSO₄·7H₂O",1.0],["KI",1.0],["CuSO₄·5H₂O",0.2],["Na₂MoO₄·2H₂O",0.1],["CoCl₂·6H₂O",0.1]],
+  iron:[["FeSO₄·7H₂O",15.0],["Na₂EDTA·2H₂O",20.0]],
+  vit:[["myo-Inositol",1000],["Thiamine·HCl",5.0],["Nicotinic acid",5.0],["Pyridoxine·HCl",0.5]],
+  note:"High myo-inositol (1000 mg·L⁻¹) and thiamine. Duchefa supplies iron as FeNaEDTA 19.8 mg·L⁻¹, equivalent to the FeSO₄ + EDTA pair shown.",
+  src:"Schenk & Hildebrandt (1972); verified against Duchefa S0225."},
+
+ {k:"DKW",name:"Driver & Kuniyuki (DKW)",year:1984,
+  use:"Walnut and other woody species, cannabis",
+  watch:"Contains nickel; zinc as nitrate; no KI or cobalt",
+  nN:"High N and high calcium",
+  macro:[["NH₄NO₃",1416],["Ca(NO₃)₂·4H₂O",1960],["K₂SO₄",1559],["MgSO₄·7H₂O",740],["KH₂PO₄",265],["CaCl₂·2H₂O",147]],
+  micro:[["H₃BO₃",4.8],["MnSO₄·H₂O",33.5],["Zn(NO₃)₂·6H₂O",17.0],["CuSO₄·5H₂O",0.25],["Na₂MoO₄·2H₂O",0.39],["NiSO₄·6H₂O",0.005]],
+  iron:[["FeSO₄·7H₂O",33.8],["Na₂EDTA·2H₂O",45.4]],
+  vit:[["myo-Inositol",100],["Thiamine·HCl",2.0],["Nicotinic acid",1.0],["Glycine",2.0]],
+  note:"Uniquely includes nickel and supplies zinc as the nitrate. 1× values derived from the PhytoTech DKW kit (D2400) ranges.",
+  src:"Driver & Kuniyuki (1984); 1× composition verified against PhytoTech D2400."},
+
+ {k:"WPM",name:"Lloyd & McCown Woody Plant (WPM)",year:1980,
+  use:"Woody and ericaceous plants",
+  watch:"Low ionic strength; may need supplementing for vigorous species",
+  nN:"Low N, high sulfate",
+  macro:[["NH₄NO₃",400],["Ca(NO₃)₂·4H₂O",556],["K₂SO₄",990],["MgSO₄·7H₂O",370],["KH₂PO₄",170],["CaCl₂·2H₂O",96]],
+  micro:[["H₃BO₃",6.2],["MnSO₄·H₂O",22.3],["ZnSO₄·7H₂O",8.6],["Na₂MoO₄·2H₂O",0.25],["CuSO₄·5H₂O",0.25]],
+  iron:[["FeSO₄·7H₂O",27.8],["Na₂EDTA·2H₂O",37.3]],
+  vit:[["myo-Inositol",100],["Thiamine·HCl",1.0],["Nicotinic acid",0.5],["Pyridoxine·HCl",0.5],["Glycine",2.0]],
+  note:"No KI or cobalt. Potassium and sulfate supplied largely as K₂SO₄; low total salts suit woody plants sensitive to high ammonium.",
+  src:"Lloyd & McCown (1980); hydrate forms per supplier formulations."},
+
+ {k:"NN",name:"Nitsch & Nitsch (NN)",year:1969,
+  use:"Anther and microspore culture; haploid production",
+  watch:"Specialised; biotin and folic acid are part of the organics",
+  nN:"Moderate N",
+  macro:[["KNO₃",950],["NH₄NO₃",720],["CaCl₂·2H₂O",166],["MgSO₄·7H₂O",185],["KH₂PO₄",68]],
+  micro:[["H₃BO₃",10.0],["MnSO₄·H₂O",18.94],["ZnSO₄·7H₂O",10.0],["Na₂MoO₄·2H₂O",0.25],["CuSO₄·5H₂O",0.025]],
+  iron:[["FeSO₄·7H₂O",27.8],["Na₂EDTA·2H₂O",37.3]],
+  vit:[["myo-Inositol",100],["Thiamine·HCl",0.5],["Nicotinic acid",5.0],["Pyridoxine·HCl",0.5],["Glycine",2.0],["Folic acid",0.5],["Biotin",0.05]],
+  note:"Salt composition verified against Duchefa N0223 (which lists FeNaEDTA 36.7 mg·L⁻¹). Organics include folic acid and biotin, unusual among basal media.",
+  src:"Nitsch & Nitsch (1969); salts verified against Duchefa N0223."},
+
+ {k:"White",name:"White's medium",year:1963,
+  use:"Root culture and low-salt requirements (historical)",
+  watch:"Too dilute for most shoot multiplication",
+  nN:"Very low N and salts",
+  macro:[["Ca(NO₃)₂·4H₂O",300],["MgSO₄·7H₂O",720],["KCl",65],["KNO₃",80],["NaH₂PO₄·H₂O",16.8]],
+  micro:[["Na₂SO₄",200],["H₃BO₃",1.5],["MnSO₄·H₂O",5.31],["ZnSO₄·7H₂O",2.67],["KI",0.75],["FeSO₄·7H₂O",3.47],["CuSO₄·5H₂O",0.001],["MoO₃",0.0001]],
+  iron:[],
+  vit:[["Thiamine·HCl",0.1],["Pyridoxine·HCl",0.1],["Nicotinic acid",0.5],["Glycine",3.0]],
+  note:"Iron is supplied as free FeSO₄ (no EDTA chelate). Original organics shown; myo-inositol was not in the original formulation. The classic root-culture medium.",
+  src:"White (1963); salts verified against Duchefa W0227."}
+];
+
+function macroTotal(m){ var s=0; m.macro.forEach(function(r){s+=r[1];}); return s; }
+
+/* overview table */
+(function(){
+  var b=$("ov_body");
+  b.innerHTML=MEDIA.map(function(m){
+    return "<tr><td class='cmp'>"+m.name+"</td><td class='val'>"+m.year+"</td><td>"+m.nN+"</td><td class='val'>"+Math.round(macroTotal(m))+" mg·L⁻¹</td><td>"+m.use+"</td><td>"+m.watch+"</td></tr>";
+  }).join("");
+})();
+
+/* medium selector */
+$("m_sel").innerHTML=MEDIA.map(function(m,i){return '<option value="'+i+'">'+m.name+' — '+m.year+'</option>';}).join("");
+
+function weighDisp(mgL,str,volL){
+  var mg=mgL*str*volL;
+  if(!isFinite(mg)) return "–";
+  if(mg>=1000) return fmt(mg/1000)+" g";
+  if(mg<0.1) return fmt(mg*1000)+" µg";
+  return fmt(mg)+" mg";
+}
+function sectionTable(title,rows,str,volL){
+  if(!rows||!rows.length) return "";
+  var body=rows.map(function(r){
+    return "<tr><td class='cmp'>"+r[0]+"</td><td class='val'>"+r[1]+"</td><td class='out'>"+weighDisp(r[1],str,volL)+"</td></tr>";
+  }).join("");
+  return "<h3>"+title+"</h3><div class='tablewrap'><table><thead><tr><th>Component</th><th>mg·L⁻¹ (1×)</th><th>Weigh for batch</th></tr></thead><tbody>"+body+"</tbody></table></div>";
+}
+function renderMedium(){
+  var m=MEDIA[+$("m_sel").value];
+  var str=val("m_str"); if(str==null||str<=0)str=1;
+  var volL=val("m_vol"); if(volL==null||volL<=0)volL=1;
+  $("m_head").innerHTML="<b>"+m.name+"</b> ("+m.year+") · "+m.nN+" nitrogen · total macro salts "+Math.round(macroTotal(m))+" mg·L⁻¹ · best for "+m.use.toLowerCase()+".";
+  var html="";
+  html+=sectionTable("Macronutrients",m.macro,str,volL);
+  html+=sectionTable("Micronutrients",m.micro,str,volL);
+  html+=sectionTable("Iron source",m.iron,str,volL);
+  html+=sectionTable("Vitamins &amp; organics",m.vit,str,volL);
+  $("m_tables").innerHTML=html;
+  $("m_note").innerHTML="<b>Note.</b> "+m.note+" Then add carbon source (commonly sucrose 20–30 g·L⁻¹), gelling agent, and growth regulators; adjust pH to 5.6–5.8 before autoclaving.";
+  $("m_src").textContent="Source: "+m.src+" Strength "+fmt(str)+"× over "+fmt(volL)+" L. Confirm against your certificate of analysis.";
+}
+["m_sel","m_str","m_vol"].forEach(function(id){$(id).addEventListener("input",renderMedium);$(id).addEventListener("change",renderMedium);});
 
 /* init */
-addCalc(); convFrom("mgl"); stockCalc(); rRender();
+addCalc(); convFrom("mgl"); stockCalc(); rRender(); renderMedium();
 </script>
 </body>
 </html>

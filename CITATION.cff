@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Research Toolkit: a free, single-file, browser-based toolkit for research workflows"
+abstract: >-
+  Free, single-file, browser-based companion tools to QueryBee for the literature-review
+  and bench-science workflow: a stage-by-stage guide to free tools for a review, a PRISMA
+  2020 flow-diagram maker, a citation de-duplicator, a reference formatter, an
+  abstract-screening referral, bench calculators (molecular biology, qPCR, solutions, and a
+  tissue-culture studio), and a tissue-culture manuscript checklist. No account, API key, or
+  server is required.
+type: software
+version: "1.0.0"
+doi: "10.5281/zenodo.20773499"
+date-released: "2026-06-20"
+license: MIT
+repository-code: "https://github.com/mafatlalmkher-cpu/research-toolkit"
+authors:
+  - family-names: "Kher"
+    given-names: "Mafatlal M."
+    orcid: "https://orcid.org/0000-0001-5600-0040"
+    affiliation: "Department of Chemical Engineering, Ariel University, Israel"
+  - family-names: "Drori"
+    given-names: "Elyashiv"
+    orcid: "https://orcid.org/0000-0003-3353-0465"
+    affiliation: "Department of Chemical Engineering, Ariel University, Israel"
+keywords:
+  - systematic review
+  - literature review
+  - PRISMA
+  - reference management
+  - tissue culture
+  - qPCR
+  - research tools

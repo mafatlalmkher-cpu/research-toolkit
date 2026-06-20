@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forensic checklist for plant tissue culture manuscripts · Research Toolkit</title>
+<meta name="description" content="A free, offline forensic checklist for plant tissue culture manuscripts: what authors, reviewers, and editors should verify before a micropropagation, regeneration, somatic embryogenesis, or transformation paper is accepted. Covers explant and sterilisation, medium and PGR reporting, experimental design and statistics, acclimatisation, genetic fidelity, and data and figure integrity. Tick through it, add notes, and export a review summary.">
+<meta name="author" content="Mafatlal M. Kher, Elyashiv Drori">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3;--ink:#211C16;--ink-soft:#6A5F52;--ink-faint:#7C7062;
+    --rule:#E6DDCE;--rule-strong:#D8CCB8;--go:#16695C;--go-deep:#0F4C42;--danger:#B23A2E;
+    --green:#2A6F4E;--green-deep:#1E5439;--green-bg:#E4F0E9;--green-line:#B9D9C7;
+    --amber-bg:#FBEEE1;--amber-deep:#9C4D12;--amber-line:#E8C9A8;
+    --shadow:0 1px 2px rgba(33,28,22,.06),0 8px 28px rgba(33,28,22,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 8% -5%,rgba(42,111,78,.06),transparent 40%);}
+  a{color:var(--go-deep)}
+  a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px 90px}
+  .back{display:inline-flex;gap:6px;margin-top:22px;font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  .back:hover{color:var(--go-deep)}
+  header.top{padding:14px 0 20px;border-bottom:1px solid var(--rule);margin-bottom:18px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:12px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(27px,4vw,40px);line-height:1.05;margin:0 0 12px}
+  .lede{font-size:16px;color:var(--ink-soft);max-width:74ch;margin:0}
+  /* controls bar */
+  .bar{position:sticky;top:0;z-index:5;background:rgba(251,248,243,.94);backdrop-filter:blur(4px);border:1px solid var(--rule);border-radius:13px;box-shadow:var(--shadow);padding:13px 16px;margin:0 0 18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .roles{display:flex;gap:6px;flex-wrap:wrap}
+  .role{font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border:1px solid var(--rule-strong);border-radius:999px;background:#fff;color:var(--ink-soft);cursor:pointer}
+  .role.on{background:var(--green-deep);color:#fff;border-color:var(--green-deep)}
+  .prog{flex:1;min-width:160px;display:flex;align-items:center;gap:10px}
+  .meter{flex:1;height:9px;background:var(--rule);border-radius:999px;overflow:hidden;min-width:90px}
+  .meter span{display:block;height:100%;width:0;background:var(--green);transition:width .2s}
+  .ptxt{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+  .acts{display:flex;gap:7px;flex-wrap:wrap}
+  .btn{font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--rule-strong);background:#fff;color:var(--go-deep)}
+  .btn.solid{background:var(--green-deep);color:#fff;border-color:var(--green-deep)}
+  .intro{font-size:13.5px;color:var(--ink-faint);background:#fff;border:1px solid var(--rule);border-radius:12px;padding:13px 16px;margin-bottom:18px;line-height:1.55}
+  .intro b{color:var(--ink)}
+  section.grp{background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:16px}
+  .grp h2{font-family:"Fraunces",serif;font-size:18px;font-weight:600;margin:0 0 3px;display:flex;align-items:baseline;gap:9px}
+  .grp h2 .gn{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--green);font-weight:500}
+  .grp .gb{font-size:13px;color:var(--ink-soft);margin:0 0 12px}
+  .grp .gcount{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);font-weight:500;margin-left:auto}
+  ul.items{list-style:none;margin:0;padding:0}
+  li.item{display:flex;gap:11px;padding:9px 0;border-top:1px dashed var(--rule)}
+  li.item:first-child{border-top:none}
+  li.item.hide{display:none}
+  .cbx{flex:0 0 auto;margin-top:2px}
+  .cbx input{width:18px;height:18px;accent-color:var(--green-deep);cursor:pointer}
+  .itxt{flex:1}
+  .itxt .t{font-size:14.5px;font-weight:600;line-height:1.4}
+  .itxt .w{font-size:12.8px;color:var(--ink-soft);margin-top:3px;line-height:1.45}
+  li.item.done .itxt .t{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--green-line)}
+  .chips{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+  .chip{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid var(--rule-strong);color:var(--ink-faint);background:var(--paper)}
+  .chip.flag{color:var(--amber-deep);background:var(--amber-bg);border-color:var(--amber-line)}
+  .notes{margin-top:8px}
+  .notes label{display:block;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-bottom:6px}
+  textarea{width:100%;min-height:90px;border:1px solid var(--rule-strong);border-radius:10px;padding:11px 13px;font-family:inherit;font-size:14px;background:#fff;color:var(--ink);resize:vertical}
+  footer.foot{margin-top:34px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-faint);line-height:1.6}
+  footer.foot a{color:var(--go-deep)}
+  @media print{.bar,.back,.acts{display:none}section.grp{break-inside:avoid;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Research Toolkit</a>
+  <header class="top">
+    <div class="eyebrow">Write it up · review it well</div>
+    <h1>Forensic checklist for tissue-culture manuscripts</h1>
+    <p class="lede">What a plant tissue culture paper needs before it should be accepted: the checks an honest author runs before submitting, and the ones a careful reviewer and editor run before recommending acceptance. It covers micropropagation, regeneration, somatic embryogenesis, and transformation studies. Tick through it, add notes, and export a summary.</p>
+  </header>
+
+  <div class="bar">
+    <div class="roles" id="roles">
+      <button class="role on" data-r="all">All</button>
+      <button class="role" data-r="A">Author</button>
+      <button class="role" data-r="R">Reviewer</button>
+      <button class="role" data-r="E">Editor</button>
+    </div>
+    <div class="prog"><div class="meter"><span id="meter"></span></div><div class="ptxt" id="ptxt">0 / 0</div></div>
+    <div class="acts">
+      <button class="btn" id="expand">Show all detail</button>
+      <button class="btn" id="reset">Reset</button>
+      <button class="btn solid" id="export">Export summary</button>
+    </div>
+  </div>
+
+  <div class="intro">
+    <b>How to use it.</b> Filter to your role, or leave it on <b>All</b>. Each item is a question to answer "yes" before the box is ticked; the grey line says why it matters. Items marked <span class="chip flag">integrity</span> are the forensic checks that catch the problems peer review most often misses. Progress and notes are saved in this browser only. Nothing is uploaded.
+  </div>
+
+  <div id="list"></div>
+
+  <section class="grp">
+    <h2><span class="gn">N</span> Reviewer / editor notes</h2>
+    <p class="gb">Free text for your decision letter or your own record. Included in the exported summary.</p>
+    <div class="notes"><label for="notes">Notes, major and minor points, requests to authors</label><textarea id="notes" placeholder="e.g. Major: PGR concentrations given in mg/L only; provide µM. Replication appears to be pseudoreplicated (shoots from one explant). Acclimatisation survival not reported. Minor: virus name not italicised on first use."></textarea></div>
+  </section>
+
+  <footer class="foot">
+    Part of the <a href="index.html">Research Toolkit</a> · free &amp; open source (MIT), by Mafatlal M. Kher (<a href="https://orcid.org/0000-0001-5600-0040" target="_blank" rel="noopener">ORCID 0000-0001-5600-0040</a>) and Elyashiv Drori (<a href="https://orcid.org/0000-0003-3353-0465" target="_blank" rel="noopener">ORCID 0000-0003-3353-0465</a>). A reporting and integrity aid, not a substitute for the target journal's instructions to authors or its editorial policy. Pair it with the bench-side <a href="tissue-culture.html">tissue-culture studio</a>.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+
+/* roles: A author, R reviewer, E editor; flag=true marks a forensic/integrity item */
+var GROUPS=[
+ {g:"1", t:"Scope & framing", b:"Whether the study earns its place before the methods are even read.", items:[
+   {t:"The aim is stated in the first paragraph: problem, gap, and what this study adds.", w:"A reader and an editor decide relevance here; a buried aim is a common desk-reject.", r:"AE"},
+   {t:"The work goes beyond 'another species on MS + BA'; the advance is explicit.", w:"Incremental species reports without a new question or method are the most rejected class of submission.", r:"ARE"},
+   {t:"Title and abstract match the data and do not over-claim.", w:"Claims of a 'universal' or 'efficient' protocol must be supported by the results shown.", r:"RE"},
+   {t:"Species and cultivar are named correctly, with authority on first use and italics.", w:"Correct nomenclature is a basic signal of care and is required by most journals.", r:"AR"}
+ ]},
+ {g:"2", t:"Plant material & explant", b:"The starting material decides what the result means and whether it can be repeated.", items:[
+   {t:"Source plant identified: genotype/cultivar, origin, age, growth conditions, and health/indexing status.", w:"Explant response depends on the donor; field vs glasshouse and juvenile vs mature change everything.", r:"AR"},
+   {t:"Explant type, position on the plant, size, and physiological/seasonal state are stated.", w:"A 'leaf explant' is not reproducible without position, age, and size.", r:"AR"},
+   {t:"Number of explants and how many donor plants they came from are given.", w:"Several explants from one plant are not independent biological replicates.", r:"R"}
+ ]},
+ {g:"3", t:"Sterilisation & decontamination", b:"Establishment is a result, not a footnote.", items:[
+   {t:"Disinfectant(s), concentration, exposure time, and rinse steps are fully specified.", w:"'Surface sterilised with bleach' is not reproducible.", r:"AR"},
+   {t:"Contamination rate and explant survival are reported, not only the surviving clean cultures.", w:"Selective reporting of clean cultures hides the real establishment efficiency.", r:"RE", flag:true},
+   {t:"Latent or endophytic contamination is considered for recalcitrant species.", w:"Bacteria can appear only after several subcultures and confound later stages.", r:"R"}
+ ]},
+ {g:"4", t:"Medium fully specified", b:"A medium a reader cannot reconstruct is the single most common reporting failure.", items:[
+   {t:"Basal medium named with strength (e.g. ½MS) and a citation.", w:"'MS medium' alone omits strength, vitamin set, and the original reference.", r:"AR"},
+   {t:"Every growth regulator is given in BOTH mg·L⁻¹ and µM.", w:"Mixed or single units make cross-study comparison impossible and hide errors.", r:"ARE", flag:true},
+   {t:"Carbon source and concentration are stated.", w:"Sugar type and level change osmotic potential and morphogenesis.", r:"AR"},
+   {t:"Gelling agent and concentration are stated (or liquid medium plus support).", w:"Agar vs gellan and its concentration affect hyperhydricity and water availability.", r:"AR"},
+   {t:"pH and the point at which it was set (before autoclaving) are stated.", w:"pH controls gel strength and nutrient availability.", r:"AR"},
+   {t:"Sterilisation of medium and of heat-labile additives (filter vs autoclave) is stated.", w:"GA3, zeatin, and some auxins degrade on autoclaving.", r:"AR"}
+ ]},
+ {g:"5", t:"Culture environment", b:"Light, temperature, and vessel are part of the treatment.", items:[
+   {t:"Temperature, photoperiod, and light intensity are given with units (µmol·m⁻²·s⁻¹) and the lamp type/spectrum.", w:"'16/8 photoperiod' without intensity and spectrum is not reproducible.", r:"AR"},
+   {t:"Vessel type, volume of medium per vessel, and closure type are stated.", w:"Gas exchange through the closure drives hyperhydricity and ethylene build-up.", r:"AR"},
+   {t:"Subculture interval and the passage/subculture number are reported.", w:"Multiplication rate and variation depend on passage number.", r:"RE"}
+ ]},
+ {g:"6", t:"Experimental design & statistics", b:"Where many otherwise sound papers fall down.", items:[
+   {t:"The experimental unit is defined and replication is true, not pseudoreplication.", w:"Treating shoots from one explant, or jars from one batch, as independent inflates n and significance.", r:"RE", flag:true},
+   {t:"Number of replicates and explants per treatment are stated.", w:"Without n, means and error bars cannot be interpreted.", r:"AR"},
+   {t:"The experiment was repeated in time or as independent runs.", w:"A single run cannot separate treatment from batch effects.", r:"R"},
+   {t:"Design (CRD/RCBD) and randomisation are described.", w:"Position effects in a growth room bias unrandomised layouts.", r:"R"},
+   {t:"The statistical test is named and its assumptions (normality, equal variance) addressed.", w:"Percentage and count data often violate ANOVA assumptions without transformation.", r:"AR"},
+   {t:"Post-hoc test, significance threshold, and software with version are stated.", w:"Required for reproducibility and correct interpretation of letters on bars.", r:"AR"},
+   {t:"Error bars are defined (SE vs SD), n is given, and percentages have denominators.", w:"SE looks tighter than SD; undefined bars are uninterpretable.", r:"RE", flag:true}
+ ]},
+ {g:"7", t:"Growth-regulator logic", b:"Whether the PGR experiment can support its conclusion.", items:[
+   {t:"The dose range is justified and an appropriate control (including PGR-free) is included.", w:"Without a control the regulator effect cannot be isolated.", r:"R"},
+   {t:"Units are consistent across text, tables, and figures.", w:"Switching between mg·L⁻¹ and µM mid-paper is a frequent source of error.", r:"RE", flag:true},
+   {t:"Auxin × cytokinin interaction is analysed when both were varied.", w:"Reporting main effects only misses the interaction that usually drives morphogenesis.", r:"R"}
+ ]},
+ {g:"8", t:"Response data & definitions", b:"Numbers mean nothing until the variable is defined.", items:[
+   {t:"Each response variable is defined (e.g. multiplication rate = shoots per explant per cycle).", w:"Undefined 'multiplication rate' cannot be compared across papers.", r:"AR"},
+   {t:"Organogenesis, somatic embryogenesis, and callus are distinguished and evidenced.", w:"Bipolar embryos vs adventitious shoots require different evidence and claims.", r:"R"},
+   {t:"Percentage response and shoots/explant are reported with n.", w:"A percentage without a denominator is not a result.", r:"AR"},
+   {t:"Histological or developmental evidence is given for the claimed regeneration pathway.", w:"Somatic embryogenesis claims need the developmental series, not a single photo.", r:"R", flag:true}
+ ]},
+ {g:"9", t:"Rooting", b:"Half of a propagation protocol.", items:[
+   {t:"In vitro vs ex vitro rooting is stated, with % rooting and roots per shoot and n.", w:"Rooting environment changes the protocol's cost and the survival that follows.", r:"AR"},
+   {t:"Auxin type, concentration, and exposure (pulse vs continuous) for rooting are given.", w:"A short auxin pulse and continuous exposure give different roots.", r:"AR"}
+ ]},
+ {g:"10", t:"Acclimatisation", b:"The stage most often missing, and the one that decides real-world use.", items:[
+   {t:"Substrate, humidity regime and how it was reduced, light, temperature, and duration are reported.", w:"Survival is meaningless without the hardening conditions that produced it.", r:"AR"},
+   {t:"Ex vitro survival % with n at a stated time point is given.", w:"A protocol that stops at in vitro rooting is incomplete.", r:"RE", flag:true},
+   {t:"Field or glasshouse performance is shown if it is claimed.", w:"Claims of field-ready plants need ex vitro evidence.", r:"R"}
+ ]},
+ {g:"11", t:"Genetic fidelity & stability", b:"Required behind any clonal-propagation claim.", items:[
+   {t:"Clonal fidelity is assessed (SSR, ISSR, RAPD, SCoT, or flow cytometry) for propagation claims.", w:"'True-to-type' without molecular or cytometric evidence is an unsupported claim.", r:"RE", flag:true},
+   {t:"Number of regenerants screened and the marker/primer detail are given.", w:"Two plants and three primers do not establish fidelity.", r:"R"},
+   {t:"Hyperhydricity and somaclonal variation are reported or explicitly excluded.", w:"High cytokinin and long culture promote both; silence is not reassurance.", r:"R"}
+ ]},
+ {g:"12", t:"Reproducibility & reporting", b:"Could another lab repeat this from the paper alone?", items:[
+   {t:"Methods are detailed enough to repeat, with reagent grades and suppliers where they matter.", w:"Charcoal, agar grade, and water quality change results and are often omitted.", r:"AR"},
+   {t:"Underlying data are available or provided.", w:"Many journals now require a data-availability statement.", r:"E"},
+   {t:"Abbreviations are defined and units are SI and consistent.", w:"Basic consistency the reader should not have to reconstruct.", r:"A"}
+ ]},
+ {g:"13", t:"Data & figure integrity", b:"The forensic layer: what to verify, not just read.", items:[
+   {t:"Figures are original; no duplicated or spliced panels and no image reused across figures.", w:"Reused or spliced panels are the commonest integrity problem in plant science figures.", r:"RE", flag:true},
+   {t:"Error bars and SD/SE are plausible for the stated n.", w:"Impossibly small variation, or identical bars across treatments, warrants the raw data.", r:"RE", flag:true},
+   {t:"Reported means, percentages, and totals are internally consistent.", w:"Percentages that cannot arise from the stated n, or rows that do not sum, signal errors.", r:"RE", flag:true},
+   {t:"Controls are shown and not selectively omitted or quietly contaminated.", w:"A missing or failed control can invert the interpretation.", r:"R", flag:true},
+   {t:"The statistics match the design; pseudoreplicated n is not reused to gain significance.", w:"Significance from inflated n is the design failure that most often survives review.", r:"RE", flag:true},
+   {t:"Image acquisition and adjustment (gain, contrast) are uniform across panels.", w:"Selective enhancement of one panel misrepresents the comparison.", r:"RE", flag:true}
+ ]},
+ {g:"14", t:"References & nomenclature", b:"Citations carry the method; they must be right.", items:[
+   {t:"Medium and method citations are correct (the right paper for MS, B5, WPM, and so on).", w:"Miscitation of the basal medium is common and undermines reproducibility.", r:"AR"},
+   {t:"Virus names are italicised per ICTV on first use; gene vs protein typography is correct, where virology or molecular work is involved.", w:"Required convention; a quick signal of domain care.", r:"AR"},
+   {t:"Self-citation is reasonable and key prior art is not omitted.", w:"Omitting the closest prior protocol inflates novelty.", r:"RE"},
+   {t:"References are verifiable (DOI/PMID) and none are fabricated or mismatched.", w:"Spot-check a sample; mismatched or invented citations are a serious integrity flag.", r:"RE", flag:true}
+ ]},
+ {g:"15", t:"Ethics, permits & biosafety", b:"Increasingly checked at submission.", items:[
+   {t:"Germplasm collection permits and Nagoya (access-and-benefit-sharing) compliance are addressed where relevant.", w:"Wild or foreign germplasm without ABS documentation can block publication.", r:"AE"},
+   {t:"Endangered-species (CITES) and institutional approvals are stated.", w:"Protected species need documented permission.", r:"E"},
+   {t:"Biosafety, containment, and regulatory status are stated for transgenic or gene-edited material.", w:"Required for any genetically modified plant material.", r:"AE"}
+ ]}
+];
+
+var ROLE_NAME={A:"Author",R:"Reviewer",E:"Editor"};
+var STORE="ptc_review_v1";
+var state={checked:{},notes:"",role:"all",detail:false};
+try{var raw=localStorage.getItem(STORE);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(e){}}
+
+function idOf(gi,ii){return gi+"."+ii;}
+function totalItems(){var n=0;GROUPS.forEach(function(g){n+=g.items.length;});return n;}
+
+/* render */
+function render(){
+  var list=$("list"); list.innerHTML="";
+  GROUPS.forEach(function(grp,gi){
+    var sec=document.createElement("section"); sec.className="grp";
+    var head='<h2><span class="gn">'+grp.g+'</span> '+grp.t+'<span class="gcount" data-gc="'+gi+'"></span></h2><p class="gb">'+grp.b+'</p>';
+    var ul='<ul class="items">';
+    grp.items.forEach(function(it,ii){
+      var id=idOf(gi,ii);
+      var on=!!state.checked[id];
+      var roles=it.r.split("").map(function(c){return '<span class="chip">'+ROLE_NAME[c]+'</span>';}).join("");
+      if(it.flag) roles='<span class="chip flag">integrity</span>'+roles;
+      var why=state.detail?'<div class="w">'+it.w+'</div>':'';
+      ul+='<li class="item'+(on?' done':'')+'" data-id="'+id+'" data-roles="'+it.r+'">'
+        +'<span class="cbx"><input type="checkbox" '+(on?'checked':'')+' aria-label="done"></span>'
+        +'<span class="itxt"><div class="t">'+it.t+'</div>'+why
+        +'<div class="chips">'+roles+'</div></span></li>';
+    });
+    ul+='</ul>';
+    sec.innerHTML=head+ul;
+    list.appendChild(sec);
+  });
+  /* wire checkboxes */
+  list.querySelectorAll("li.item").forEach(function(li){
+    var cb=li.querySelector("input");
+    cb.addEventListener("change",function(){
+      state.checked[li.getAttribute("data-id")]=cb.checked;
+      li.classList.toggle("done",cb.checked);
+      save(); applyFilter(); updateProg();
+    });
+  });
+  applyFilter(); updateProg();
+}
+
+function applyFilter(){
+  var r=state.role;
+  document.querySelectorAll("#roles .role").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-r")===r);});
+  GROUPS.forEach(function(grp,gi){
+    var shown=0,done=0;
+    grp.items.forEach(function(it,ii){
+      var li=document.querySelector('li.item[data-id="'+idOf(gi,ii)+'"]');
+      var match=(r==="all")||it.r.indexOf(r)>=0;
+      li.classList.toggle("hide",!match);
+      if(match){shown++; if(state.checked[idOf(gi,ii)])done++;}
+    });
+    var gc=document.querySelector('[data-gc="'+gi+'"]');
+    if(gc) gc.textContent= shown? (done+"/"+shown) : "";
+  });
+}
+
+function updateProg(){
+  var r=state.role, shown=0, done=0;
+  GROUPS.forEach(function(grp,gi){
+    grp.items.forEach(function(it,ii){
+      var match=(r==="all")||it.r.indexOf(r)>=0;
+      if(match){shown++; if(state.checked[idOf(gi,ii)])done++;}
+    });
+  });
+  $("meter").style.width=(shown? (100*done/shown):0)+"%";
+  $("ptxt").textContent=done+" / "+shown+(r==="all"?"":" ("+ROLE_NAME[r]+")");
+}
+
+/* controls */
+$("roles").addEventListener("click",function(e){
+  var b=e.target.closest(".role"); if(!b)return;
+  state.role=b.getAttribute("data-r"); save(); applyFilter(); updateProg();
+});
+$("expand").addEventListener("click",function(){
+  state.detail=!state.detail; $("expand").textContent=state.detail?"Hide detail":"Show all detail"; save(); render();
+});
+$("reset").addEventListener("click",function(){
+  if(!confirm("Clear all ticks and notes?"))return;
+  state.checked={}; state.notes=""; $("notes").value=""; save(); render();
+});
+$("notes").value=state.notes||"";
+$("notes").addEventListener("input",function(){state.notes=$("notes").value;save();});
+
+/* export markdown */
+$("export").addEventListener("click",function(){
+  var d=new Date().toISOString().slice(0,10);
+  var r=state.role==="all"?"All roles":ROLE_NAME[state.role];
+  var tot=0,don=0;
+  GROUPS.forEach(function(grp,gi){grp.items.forEach(function(it,ii){tot++;if(state.checked[idOf(gi,ii)])don++;});});
+  var out="# Forensic review — plant tissue culture manuscript\n\n";
+  out+="Filter: "+r+"  ·  Date: "+d+"  ·  "+don+" / "+tot+" items checked\n\n";
+  GROUPS.forEach(function(grp,gi){
+    out+="## "+grp.g+". "+grp.t+"\n";
+    grp.items.forEach(function(it,ii){
+      var on=state.checked[idOf(gi,ii)]?"x":" ";
+      var tag=it.flag?" [integrity]":"";
+      out+="- ["+on+"] "+it.t+tag+"\n";
+    });
+    out+="\n";
+  });
+  out+="## Notes\n\n"+(state.notes||"(none)")+"\n";
+  var blob=new Blob([out],{type:"text/markdown;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="ptc-manuscript-review-"+d+".md";
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},100);
+});
+
+$("expand").textContent=state.detail?"Hide detail":"Show all detail";
+render();
+</script>
+</body>
+</html>
